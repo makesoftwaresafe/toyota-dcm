@@ -1,0 +1,110 @@
+From d8e35a560dfada578c6f6dea520d7d908b002001 Mon Sep 17 00:00:00 2001
+From: Toby Gray <toby.gray@realvnc.com>
+Date: Thu, 3 May 2012 11:25:11 +0100
+Subject: [PATCH 08/28] Windows: Fix deadlock when submitting transfers
+
+The Windows backend needed to call usbi_fd_notification() from
+submit_transfer() because a new event source is added for every WinUSB
+transfer. This could cause a deadlock when attempting to lock the event
+lock if another thread was processing events on the just-submitted
+transfer.
+
+The deadlock comes about as the thread calling libusb_submit_transfer()
+acquires the transfer mutex before trying to acquire the event lock; this
+is the other order of lock acquisition from an event thread handling
+activity on the just submitted transfer. This could lead to one of two
+deadlocks:
+
+1) If the transfer completes while usbi_fd_notification() is waiting for
+the event lock and the callback attempts to resubmit the transfer.
+
+2) If the transfer timeout is hit while usbi_fd_notification() is waiting
+for the event lock then the attempt to cancel the transfer will deadlock.
+
+This patch fixes both of these deadlocks by having libusb_submit_transfer()
+only call usbi_fd_notification() after having released the transfer mutex.
+
+This deadlock was always present in the Windows code, but temporarily
+deleted by mistake in commit 6506013c6d4face34cfec79dd0584e9f528cbc6a
+and later restored in commit 325a8416697cf69b9b926ed68720f12b1aedf940.
+
+libusbx.git commit 1ed09c7b2a5fc27c3cfea21740584879781bff67
+
+[stuge: Touch up commit message]
+---
+ libusb/io.c             |    4 ++++
+ libusb/libusbi.h        |    3 +++
+ libusb/os/windows_usb.c |    6 +++---
+ 3 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/libusb/io.c b/libusb/io.c
+index e9bd312..7a3cf73 100644
+--- a/libusb/io.c
++++ b/libusb/io.c
+@@ -1292,6 +1292,7 @@ int API_EXPORTED libusb_submit_transfer(struct libusb_transfer *transfer)
+ 		LIBUSB_TRANSFER_TO_USBI_TRANSFER(transfer);
+ 	int r;
+ 	int first;
++	int updated_fds;
+ 
+ 	usbi_mutex_lock(&itransfer->lock);
+ 	itransfer->transferred = 0;
+@@ -1325,7 +1326,10 @@ int API_EXPORTED libusb_submit_transfer(struct libusb_transfer *transfer)
+ #endif
+ 
+ out:
++	updated_fds = (itransfer->flags & USBI_TRANSFER_UPDATED_FDS);
+ 	usbi_mutex_unlock(&itransfer->lock);
++	if (updated_fds)
++		usbi_fd_notification(ctx);
+ 	return r;
+ }
+ 
+diff --git a/libusb/libusbi.h b/libusb/libusbi.h
+index a611e8a..3b602d2 100644
+--- a/libusb/libusbi.h
++++ b/libusb/libusbi.h
+@@ -385,6 +385,9 @@ enum usbi_transfer_flags {
+ 
+ 	/* Operation on the transfer failed because the device disappeared */
+ 	USBI_TRANSFER_DEVICE_DISAPPEARED = 1 << 3,
++
++	/* Set by backend submit_transfer() if the fds in use were updated */
++	USBI_TRANSFER_UPDATED_FDS = 1 << 4,
+ };
+ 
+ #define USBI_TRANSFER_TO_LIBUSB_TRANSFER(transfer) \
+diff --git a/libusb/os/windows_usb.c b/libusb/os/windows_usb.c
+index 6ceaec2..ea824b0 100644
+--- a/libusb/os/windows_usb.c
++++ b/libusb/os/windows_usb.c
+@@ -1768,7 +1768,7 @@ static int submit_bulk_transfer(struct usbi_transfer *itransfer)
+ 	usbi_add_pollfd(ctx, transfer_priv->pollable_fd.fd,
+ 		(short)(IS_XFERIN(transfer) ? POLLIN : POLLOUT));
+ 
+-	usbi_fd_notification(ctx);
++	itransfer->flags |= USBI_TRANSFER_UPDATED_FDS;
+ 	return LIBUSB_SUCCESS;
+ }
+ 
+@@ -1788,7 +1788,7 @@ static int submit_iso_transfer(struct usbi_transfer *itransfer)
+ 	usbi_add_pollfd(ctx, transfer_priv->pollable_fd.fd,
+ 		(short)(IS_XFERIN(transfer) ? POLLIN : POLLOUT));
+ 
+-	usbi_fd_notification(ctx);
++	itransfer->flags |= USBI_TRANSFER_UPDATED_FDS;
+ 	return LIBUSB_SUCCESS;
+ }
+ 
+@@ -1807,7 +1807,7 @@ static int submit_control_transfer(struct usbi_transfer *itransfer)
+ 
+ 	usbi_add_pollfd(ctx, transfer_priv->pollable_fd.fd, POLLIN);
+ 
+-	usbi_fd_notification(ctx);
++	itransfer->flags |= USBI_TRANSFER_UPDATED_FDS;
+ 	return LIBUSB_SUCCESS;
+ 
+ }
+-- 
+1.7.9.5
+

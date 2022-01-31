@@ -1,0 +1,24 @@
+From fdd3c04a617b330084335bee90387dcfa975500f Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Mon, 9 May 2011 12:54:10 +0300
+Subject: [PATCH 25/32] python: remove unused variable
+
+---
+ python/libxml.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/python/libxml.c b/python/libxml.c
+index cfdaac8..3e26e2d 100644
+--- a/python/libxml.c
++++ b/python/libxml.c
+@@ -2762,7 +2762,6 @@ libxml_serializeNode(ATTRIBUTE_UNUSED PyObject * self, PyObject * args)
+     xmlDocPtr doc;
+     const char *encoding;
+     int format;
+-    int len;
+     xmlSaveCtxtPtr ctxt;
+     xmlBufferPtr buf;
+     int options = 0;
+-- 
+1.7.9.5
+

@@ -1,0 +1,43 @@
+From b988c3d66e349b4f3c430410a42b6203f4fef80f Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Sun, 3 Jun 2012 21:28:13 +0200
+Subject: [PATCH 07/28] Clean up broken whitespace in list_for_each_entry()
+ macros
+
+Introduced by commit aa77b02da65afb0332b9e6853dae9e4dcda00bfa.
+---
+ libusb/libusbi.h |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/libusb/libusbi.h b/libusb/libusbi.h
+index 976be0d..a611e8a 100644
+--- a/libusb/libusbi.h
++++ b/libusb/libusbi.h
+@@ -68,15 +68,15 @@ struct list_head {
+  *	type - the type of the first parameter
+  */
+ #define list_for_each_entry(pos, head, member, type)			\
+-	for (pos = list_entry((head)->next, type, member);			\
+-		 &pos->member != (head);								\
+-		 pos = list_entry(pos->member.next, type, member))
+-
+-#define list_for_each_entry_safe(pos, n, head, member, type)	\
+-	for (pos = list_entry((head)->next, type, member),			\
+-		 n = list_entry(pos->member.next, type, member);		\
+-		 &pos->member != (head);								\
+-		 pos = n, n = list_entry(n->member.next, type, member))
++	for (pos = list_entry((head)->next, type, member);		\
++	     &pos->member != (head);					\
++	     pos = list_entry(pos->member.next, type, member))
++
++#define list_for_each_entry_safe(pos, n, head, member, type)		\
++	for (pos = list_entry((head)->next, type, member),		\
++	       n = list_entry(pos->member.next, type, member);		\
++	     &pos->member != (head);					\
++	     pos = n, n = list_entry(n->member.next, type, member))
+ 
+ #define list_empty(entry) ((entry)->next == (entry))
+ 
+-- 
+1.7.9.5
+

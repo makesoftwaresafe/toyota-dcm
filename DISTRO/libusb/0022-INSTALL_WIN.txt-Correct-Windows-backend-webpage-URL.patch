@@ -1,0 +1,25 @@
+From b7ed26c7add5528b71a205b4f04c242d3cbeab54 Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Sat, 4 Aug 2012 14:27:55 +0200
+Subject: [PATCH 22/28] INSTALL_WIN.txt: Correct Windows backend webpage URL
+
+---
+ INSTALL_WIN.txt |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/INSTALL_WIN.txt b/INSTALL_WIN.txt
+index 745e7e8..92280eb 100644
+--- a/INSTALL_WIN.txt
++++ b/INSTALL_WIN.txt
+@@ -50,7 +50,7 @@ Links
+ *****
+ 
+ Additional information related to the Windows backend:
+-  https://sourceforge.net/apps/mediawiki/libusbx/index.php?title=Windows
++  https://libusb.org/wiki/windows_backend
+ 
+ Latest Windows Driver (Development) Kit (WDK):
+   http://www.microsoft.com/downloads/details.aspx?displaylang=en&FamilyID=36a2630f-5d56-43b5-b996-7633f2ec14ff
+-- 
+1.7.9.5
+

@@ -1,0 +1,55 @@
+From cd6d6dedcf32d58a4b08e58bdd166c8e585904ee Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Wed, 15 Oct 2014 16:01:20 -0500
+Subject: [PATCH] ubiupdatevol support to updates between volumes
+
+ubiupdatevol utility now can update a UBI volume from another volume
+directly.
+
+Change-Id: Icf3d620d9334b26a5e0a95eafc25f55317409b41
+---
+ ubi-utils/ubiupdatevol.c |   27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/ubi-utils/ubiupdatevol.c b/ubi-utils/ubiupdatevol.c
+index 7fedb3c..9d47068 100644
+--- a/ubi-utils/ubiupdatevol.c
++++ b/ubi-utils/ubiupdatevol.c
+@@ -191,14 +191,27 @@ static int update_volume(libubi_t libubi, struct ubi_vol_info *vol_info)
+ 		return errmsg("cannot allocate %d bytes of memory", vol_info->leb_size);
+ 
+ 	if (!args.size) {
+-		struct stat st;
+-		err = stat(args.img, &st);
+-		if (err < 0) {
+-			errmsg("stat failed on \"%s\"", args.img);
+-			goto out_free;
+-		}
++		if (!strncmp(args.img, "/dev/ubi0_",10)) {
++			struct ubi_vol_info src_vol_info;
++
++			err = ubi_get_vol_info(libubi, args.img, &src_vol_info);
++			if (err) {
++				sys_errmsg("cannot get information about source "
++					"UBI volume \"%s\"", args.img);
++				goto out_free;
++			}
+ 
+-		bytes = st.st_size;
++			bytes = src_vol_info.rsvd_bytes;
++		} else {
++			struct stat st;
++			err = stat(args.img, &st);
++			if (err < 0) {
++				errmsg("stat failed on \"%s\"", args.img);
++				goto out_free;
++			}
++
++			bytes = st.st_size;
++		}
+ 	} else
+ 		bytes = args.size;
+ 
+-- 
+1.7.9.5
+

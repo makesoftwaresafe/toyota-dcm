@@ -1,0 +1,27 @@
+From 50befb657e3243c64bf84cc00c6f1dd0b6282f67 Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Fri, 20 Jul 2012 16:04:56 -0500
+Subject: [PATCH 2/3] version string fallback when git is not present.
+
+Ticket-Id: BZ81
+Change-Id: I814af1f018de7afbfeb76713a0fea5006a8f38b3
+---
+ src/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Makefile b/src/Makefile
+index f0ad316..e453e6e 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -167,7 +167,7 @@ assembler:
+ 
+ bk.ver: 
+ 	rm -f bk.ver
+-	git describe > bk.ver
++	git describe > bk.ver || echo "unknown-version" > bk.ver
+ 	touch bk.ver
+ 
+ dist: bk.ver
+-- 
+1.7.9.5
+

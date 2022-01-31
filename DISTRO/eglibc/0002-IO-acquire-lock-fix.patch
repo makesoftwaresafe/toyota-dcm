@@ -1,0 +1,26 @@
+From 09f0d0d8e0bf8261531032036c30ad3df54fad04 Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Thu, 25 Oct 2012 15:33:29 -0500
+Subject: [PATCH 2/8] IO acquire lock fix
+
+import http://sourceware.org/ml/libc-ports/2007-12/msg00000.html
+---
+ libc/bits/stdio-lock.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libc/bits/stdio-lock.h b/libc/bits/stdio-lock.h
+index d7c1db0..1d10bad 100644
+--- a/libc/bits/stdio-lock.h
++++ b/libc/bits/stdio-lock.h
+@@ -50,6 +50,8 @@ __libc_lock_define_recursive (typedef, _IO_lock_t)
+   _IO_cleanup_region_start ((void (*) (void *)) _IO_funlockfile, (_fp));      \
+   _IO_flockfile (_fp)
+ 
++# define _IO_acquire_lock_clear_flags2(_fp) _IO_acquire_lock (_fp)
++
+ # define _IO_release_lock(_fp) \
+   _IO_funlockfile (_fp);						      \
+   _IO_cleanup_region_end (0)
+-- 
+1.7.9.5
+

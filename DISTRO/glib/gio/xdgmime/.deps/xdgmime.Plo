@@ -1,0 +1,144 @@
+xdgmime.lo: xdgmime.c ../../config.h xdgmime.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/stdlib.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/features.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/predefs.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/cdefs.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/wordsize.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/gnu/stubs.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../lib/gcc/arm-cas-linux-gnueabi/4.6.2/include/stddef.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/waitflags.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/waitstatus.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/endian.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/endian.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/byteswap.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/xlocale.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/types.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/types.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/typesizes.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/time.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/select.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/select.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/sigset.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/time.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/sysmacros.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/pthreadtypes.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/alloca.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/stat.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/stat.h \
+ xdgmimeint.h xdgmimeglob.h xdgmimemagic.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/unistd.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/posix_opt.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/environments.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/confname.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/getopt.h \
+ xdgmimealias.h xdgmimeicon.h xdgmimeparent.h xdgmimecache.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/stdio.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/libio.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/_G_config.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/wchar.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../lib/gcc/arm-cas-linux-gnueabi/4.6.2/include/stdarg.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/stdio_lim.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/sys_errlist.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/string.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/time.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/assert.h
+
+../../config.h:
+
+xdgmime.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/stdlib.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/features.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/predefs.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/cdefs.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/wordsize.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/gnu/stubs.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../lib/gcc/arm-cas-linux-gnueabi/4.6.2/include/stddef.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/waitflags.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/waitstatus.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/endian.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/endian.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/byteswap.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/xlocale.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/types.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/types.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/typesizes.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/time.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/select.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/select.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/sigset.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/time.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/sysmacros.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/pthreadtypes.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/alloca.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/stat.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/stat.h:
+
+xdgmimeint.h:
+
+xdgmimeglob.h:
+
+xdgmimemagic.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/unistd.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/posix_opt.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/environments.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/confname.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/getopt.h:
+
+xdgmimealias.h:
+
+xdgmimeicon.h:
+
+xdgmimeparent.h:
+
+xdgmimecache.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/stdio.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/libio.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/_G_config.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/wchar.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../lib/gcc/arm-cas-linux-gnueabi/4.6.2/include/stdarg.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/stdio_lim.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/bits/sys_errlist.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/string.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/sys/time.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/release/fs/devel/usr/bin/../..//usr/include/assert.h:

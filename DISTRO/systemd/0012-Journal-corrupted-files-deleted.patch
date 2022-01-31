@@ -1,0 +1,47 @@
+From 751082b287d82a9e092f5ff3663c957497f91511 Mon Sep 17 00:00:00 2001
+From: Alan Garcia <alan.garcia@continental-corporation.com>
+Date: Fri, 3 Oct 2014 12:40:10 -0500
+Subject: [PATCH 12/15] Journal corrupted files deleted
+
+All the journal corrupted files will be deleted to avoid that these
+files consume all the space in /data volume.
+
+Ticket-Id: OTP_Dpk#238
+Change-Id: Ia4ecedc056053e930635901e1fbbbd2ec68cce88
+---
+ src/journal/journal-file.c |   18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
+
+diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
+index 6934080..522ea01 100644
+--- a/src/journal/journal-file.c
++++ b/src/journal/journal-file.c
+@@ -2630,21 +2630,11 @@ int journal_file_open_reliably(
+         if (!endswith(fname, ".journal"))
+                 return r;
+ 
+-        /* The file is corrupted. Rotate it away and try it again (but only once) */
+-
+-        l = strlen(fname);
+-        if (asprintf(&p, "%.*s@%016llx-%016llx.journal~",
+-                     (int) (l-8), fname,
+-                     (unsigned long long) now(CLOCK_REALTIME),
+-                     random_ull()) < 0)
+-                return -ENOMEM;
+-
+-        r = rename(fname, p);
+-        if (r < 0)
+-                return -errno;
+-
+-        log_warning("File %s corrupted or uncleanly shut down, renaming and replacing.", fname);
++        /* The file is corrupted. Remove the file to avoid consume all
++         * the space in /data */
+ 
++        log_warning("File %s corrupted or uncleanly shut down, file will be deleted", fname);
++        remove(fname);
+         return journal_file_open(fname, flags, mode, compress, seal,
+                                  metrics, mmap_cache, template, ret);
+ }
+-- 
+1.7.9.5
+

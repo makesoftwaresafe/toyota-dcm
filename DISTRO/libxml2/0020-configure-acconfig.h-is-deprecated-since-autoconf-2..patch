@@ -1,0 +1,38 @@
+From a46b2357239aea4610c4562f59f2936af77880aa Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Tue, 10 May 2011 11:53:58 +0300
+Subject: [PATCH 20/32] configure: acconfig.h is deprecated since
+ autoconf-2.50
+
+Remove deprecated file (leftover from autoconf-2.13). The generated config.h is
+the same as we already use the 3-arg versions of AC_DEFINE.
+---
+ acconfig.h |   16 ----------------
+ 1 file changed, 16 deletions(-)
+ delete mode 100644 acconfig.h
+
+diff --git a/acconfig.h b/acconfig.h
+deleted file mode 100644
+index dedcf1d..0000000
+--- a/acconfig.h
++++ /dev/null
+@@ -1,16 +0,0 @@
+-#undef PACKAGE
+-#undef VERSION
+-#undef HAVE_LIBZ
+-#undef HAVE_LIBM
+-#undef HAVE_ISINF
+-#undef HAVE_ISNAN
+-#undef HAVE_LIBHISTORY
+-#undef HAVE_LIBREADLINE
+-#undef HAVE_LIBPTHREAD
+-#undef HAVE_PTHREAD_H
+-
+-/* Define if IPV6 support is there */
+-#undef SUPPORT_IP6
+-
+-/* Define if getaddrinfo is there */
+-#undef HAVE_GETADDRINFO
+-- 
+1.7.9.5
+

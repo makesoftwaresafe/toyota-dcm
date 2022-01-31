@@ -1,0 +1,50 @@
+From ecb5d5afdc8acceba608524f6e98c361fd2ce0e9 Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Fri, 6 May 2011 17:40:10 +0300
+Subject: [PATCH 17/32] xmlmemory: add a cast as size_t has no portable printf
+ modifier
+
+Also use %lu as that is more appropriate for size_t.
+---
+ xmlmemory.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/xmlmemory.c b/xmlmemory.c
+index 433abb8..a0ab953 100644
+--- a/xmlmemory.c
++++ b/xmlmemory.c
+@@ -205,7 +205,8 @@ xmlMallocLoc(size_t size, const char * file, int line)
+ 
+     if (xmlMemTraceBlockAt == ret) {
+ 	xmlGenericError(xmlGenericErrorContext,
+-			"%p : Malloc(%ld) Ok\n", xmlMemTraceBlockAt, size);
++			"%p : Malloc(%lu) Ok\n", xmlMemTraceBlockAt,
++			(long unsigned)size);
+ 	xmlMallocBreakpoint();
+     }
+ 
+@@ -273,7 +274,8 @@ xmlMallocAtomicLoc(size_t size, const char * file, int line)
+ 
+     if (xmlMemTraceBlockAt == ret) {
+ 	xmlGenericError(xmlGenericErrorContext,
+-			"%p : Malloc(%ld) Ok\n", xmlMemTraceBlockAt, size);
++			"%p : Malloc(%lu) Ok\n", xmlMemTraceBlockAt,
++			(long unsigned)size);
+ 	xmlMallocBreakpoint();
+     }
+ 
+@@ -348,8 +350,9 @@ xmlReallocLoc(void *ptr,size_t size, const char * file, int line)
+     }
+     if (xmlMemTraceBlockAt == ptr) {
+ 	xmlGenericError(xmlGenericErrorContext,
+-			"%p : Realloced(%ld -> %ld) Ok\n",
+-			xmlMemTraceBlockAt, p->mh_size, size);
++			"%p : Realloced(%lu -> %lu) Ok\n",
++			xmlMemTraceBlockAt, (long unsigned)p->mh_size,
++			(long unsigned)size);
+ 	xmlMallocBreakpoint();
+     }
+     p->mh_tag = MEMTAG;
+-- 
+1.7.9.5
+

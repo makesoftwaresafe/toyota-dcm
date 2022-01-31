@@ -1,0 +1,32 @@
+From 241d4a1069e6bedd0ee2295d7b43858109c1c6d1 Mon Sep 17 00:00:00 2001
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Date: Wed, 23 Feb 2011 22:30:59 +0800
+Subject: [PATCH 11/32] __xmlRaiseError: fix the structured callback channel's
+ data initialization
+
+if we initialize the structured channel from the sax handler we should also
+pass the userData
+---
+ error.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/error.c b/error.c
+index 15b431e..9c0f6bb 100644
+--- a/error.c
++++ b/error.c
+@@ -461,8 +461,11 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
+ 	(domain == XML_FROM_IO) || (domain == XML_FROM_VALID)) {
+ 	ctxt = (xmlParserCtxtPtr) ctx;
+ 	if ((schannel == NULL) && (ctxt != NULL) && (ctxt->sax != NULL) &&
+-	    (ctxt->sax->initialized == XML_SAX2_MAGIC))
++	    (ctxt->sax->initialized == XML_SAX2_MAGIC) &&
++	    (ctxt->sax->serror != NULL)) {
+ 	    schannel = ctxt->sax->serror;
++	    data = ctxt->userData;
++	}
+     }
+     /*
+      * Check if structured error handler set
+-- 
+1.7.9.5
+

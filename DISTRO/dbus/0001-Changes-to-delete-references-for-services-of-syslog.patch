@@ -1,0 +1,26 @@
+From de66d512ec318b447723ad711ff5ea89ff667435 Mon Sep 17 00:00:00 2001
+From: kalyan majumder <kalyan.majumderi-ext@continental-corporation.com>
+Date: Thu, 3 Mar 2016 16:51:27 +0530
+Subject: [PATCH] Changes to delete references for services of syslog.
+
+Ticket-Id:TP_Dpk#794
+Change-Id: I52e60e0c8392bc5226af8d4e56407b678b4b85ae
+---
+ bus/dbus.service.in |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/bus/dbus.service.in b/bus/dbus.service.in
+index 160947c..1b0bbb2 100644
+--- a/bus/dbus.service.in
++++ b/bus/dbus.service.in
+@@ -1,7 +1,6 @@
+ [Unit]
+ Description=D-Bus System Message Bus
+ Requires=dbus.socket
+-After=syslog.target
+ 
+ [Service]
+ ExecStart=@EXPANDED_BINDIR@/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation
+-- 
+1.7.9.5
+

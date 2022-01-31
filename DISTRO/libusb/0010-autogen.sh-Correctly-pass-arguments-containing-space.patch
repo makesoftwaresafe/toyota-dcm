@@ -1,0 +1,24 @@
+From 133092314d539d4c1a37997bb0c4ccfbcacb4677 Mon Sep 17 00:00:00 2001
+From: Ludovic Rousseau <ludovic.rousseau@gmail.com>
+Date: Fri, 4 May 2012 16:56:00 +0100
+Subject: [PATCH 10/28] autogen.sh: Correctly pass arguments containing spaces
+ to configure
+
+libusbx.git commit d20cd4f3573fe74d0ec5a4e1d60c9d291547ace4
+---
+ autogen.sh |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/autogen.sh b/autogen.sh
+index 8b512e5..c17bd24 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -17,4 +17,4 @@ autoheader || exit 1
+ autoconf || exit 1
+ automake -a -c || exit 1
+ ./configure --enable-maintainer-mode --enable-debug-log \
+-	--enable-examples-build $*
++	--enable-examples-build "$@"
+-- 
+1.7.9.5
+

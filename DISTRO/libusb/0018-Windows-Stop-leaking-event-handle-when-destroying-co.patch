@@ -1,0 +1,26 @@
+From 53e526e21b519300aff9c9579f886cfc107b0a30 Mon Sep 17 00:00:00 2001
+From: Simon Haggett <simon.haggett@realvnc.com>
+Date: Tue, 10 Jul 2012 16:07:45 +0100
+Subject: [PATCH 18/28] Windows: Stop leaking event handle when destroying
+ condition variables
+
+usbi_cond_destroy() must close the handle created by usbi_cond_intwait().
+---
+ libusb/os/threads_windows.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libusb/os/threads_windows.c b/libusb/os/threads_windows.c
+index 1394bb0..b92b645 100644
+--- a/libusb/os/threads_windows.c
++++ b/libusb/os/threads_windows.c
+@@ -95,6 +95,7 @@ int usbi_cond_destroy(usbi_cond_t *cond) {
+ 	if(!list_empty(&cond->waiters)) return ((errno=EBUSY )); // (!see above!)
+ 	list_for_each_entry(pos, &cond->not_waiting, list, struct usbi_cond_perthread) {
+ 		free(prev_pos);
++		CloseHandle(pos->event);
+ 		list_del(&pos->list);
+ 		prev_pos = pos;
+ 	}
+-- 
+1.7.9.5
+

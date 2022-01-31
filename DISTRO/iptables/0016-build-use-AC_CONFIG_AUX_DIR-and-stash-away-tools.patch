@@ -1,0 +1,48 @@
+From de26cd21f367d929a1aff41e268ce250ad49b04b Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@medozas.de>
+Date: Sun, 18 Dec 2011 20:21:27 +0100
+Subject: [PATCH 16/19] build: use AC_CONFIG_AUX_DIR and stash away tools
+
+---
+ .gitignore   |   12 ++----------
+ configure.ac |    1 +
+ 2 files changed, 3 insertions(+), 10 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index deed221..8e082d2 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -23,16 +23,8 @@ Makefile.in
+ 
+ /aclocal.m4
+ /autom4te.cache/
+-/compile
+-/config.guess
+-/config.h*
+-/config.log
+-/config.status
+-/config.sub
++/build-aux/
++/config.*
+ /configure
+-/depcomp
+-/install-sh
+ /libtool
+-/ltmain.sh
+-/missing
+ /stamp-h1
+diff --git a/configure.ac b/configure.ac
+index 298d551..5679098 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -5,6 +5,7 @@ AC_INIT([iptables], [1.4.12.1])
+ libxtables_vcurrent=7
+ libxtables_vage=0
+ 
++AC_CONFIG_AUX_DIR([build-aux])
+ AC_CONFIG_HEADERS([config.h])
+ AC_CONFIG_MACRO_DIR([m4])
+ AC_PROG_INSTALL
+-- 
+1.7.9.5
+

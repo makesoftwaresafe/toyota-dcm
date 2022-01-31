@@ -1,0 +1,30 @@
+From 4c536d5dcdcfa2eecb8db5db99598d3ecc6ea664 Mon Sep 17 00:00:00 2001
+From: Alan Garcia <alan.garcia@continental-corporation.com>
+Date: Tue, 28 Oct 2014 16:45:45 -0600
+Subject: [PATCH 14/15] disable monotonic entry journal verification
+
+monotonic entry journal verification is disabled due to the monotonic
+clock is reset every time the system is rebooted or started making
+invalid the monotonic timestamp for every journal entry.
+
+Ticket-Id: OTP_Dpk#366
+Change-Id: Idacd6f7c7ea3f2ac9765f75f53dd0f602a1618b0
+---
+ src/journal/journal-verify.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/journal/journal-verify.c b/src/journal/journal-verify.c
+index 3405811..303a6a2 100644
+--- a/src/journal/journal-verify.c
++++ b/src/journal/journal-verify.c
+@@ -949,7 +949,6 @@ int journal_file_verify(
+ 
+                         entry_monotonic = le64toh(o->entry.monotonic);
+                         entry_boot_id = o->entry.boot_id;
+-                        entry_monotonic_set = true;
+ 
+                         if (!entry_realtime_set &&
+                             le64toh(o->entry.realtime) != le64toh(f->header->head_entry_realtime)) {
+-- 
+1.7.9.5
+

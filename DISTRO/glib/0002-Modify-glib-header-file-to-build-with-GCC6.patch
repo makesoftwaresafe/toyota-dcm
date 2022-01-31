@@ -1,0 +1,30 @@
+From cef899c6c5a06e6583ef7f83245efd18439fc2a6 Mon Sep 17 00:00:00 2001
+From: Animesh Das <animesh.2.das-ext@continental-corporation.com>
+Date: Fri, 22 Jul 2016 11:16:23 -0400
+Subject: [PATCH 2/2] Modify glib header file to build with GCC6
+
+Ticket-Id: TP_Dpk#5920
+Change-Id: I670f3579f673ff6e836c7e22a87aab01a8d4e556
+---
+ glib/gmacros.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/glib/gmacros.h b/glib/gmacros.h
+index 4ad57da..1b6c6c8 100644
+--- a/glib/gmacros.h
++++ b/glib/gmacros.h
+@@ -159,9 +159,9 @@
+ #define G_PASTE_ARGS(identifier1,identifier2) identifier1 ## identifier2
+ #define G_PASTE(identifier1,identifier2)      G_PASTE_ARGS (identifier1, identifier2)
+ #ifdef __COUNTER__
+-#define G_STATIC_ASSERT(expr) typedef char G_PASTE (_GStaticAssertCompileTimeAssertion_, __COUNTER__)[(expr) ? 1 : -1]
++#define G_STATIC_ASSERT(expr) typedef char G_PASTE (_GStaticAssertCompileTimeAssertion_, __COUNTER__)[(expr) ? 1 : -1] G_GNUC_UNUSED
+ #else
+-#define G_STATIC_ASSERT(expr) typedef char G_PASTE (_GStaticAssertCompileTimeAssertion_, __LINE__)[(expr) ? 1 : -1]
++#define G_STATIC_ASSERT(expr) typedef char G_PASTE (_GStaticAssertCompileTimeAssertion_, __LINE__)[(expr) ? 1 : -1] G_GNUC_UNUSED
+ #endif
+ #define G_STATIC_ASSERT_EXPR(expr) ((void) sizeof (char[(expr) ? 1 : -1]))
+ #endif
+-- 
+1.7.9.5
+

@@ -1,0 +1,26 @@
+From c794eb5bb0a6c4f3d213015fa26a11e1e46a3626 Mon Sep 17 00:00:00 2001
+From: Rob Richards <rrichards@cdatazone.org>
+Date: Fri, 18 Feb 2011 12:17:17 -0500
+Subject: [PATCH 08/32] Fix memory corruption when
+ xmlParseBalancedChunkMemoryInternal is called from
+ xmlParseBalancedChunk
+
+---
+ parser.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/parser.c b/parser.c
+index d1c7888..9ab8641 100644
+--- a/parser.c
++++ b/parser.c
+@@ -6992,6 +6992,7 @@ xmlParseReference(xmlParserCtxtPtr ctxt) {
+ 		    ent->owner = 1;
+ 		    while (list != NULL) {
+ 			list->parent = (xmlNodePtr) ent;
++			xmlSetTreeDoc(list, ent->doc);
+ 			if (list->next == NULL)
+ 			    ent->last = list;
+ 			list = list->next;
+-- 
+1.7.9.5
+

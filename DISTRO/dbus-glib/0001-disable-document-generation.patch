@@ -1,0 +1,104 @@
+From 0a2de568df6e740bf55fb8f213a7c49a331f017c Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Tue, 6 Mar 2012 09:37:23 -0600
+Subject: [PATCH] disable document generation.
+
+Change-Id: If7d78cb83c47bb1e78d0ed2acae7878b462e884d
+---
+ Makefile.am    |    6 +++---
+ autogen.sh     |    6 +++---
+ configure.ac   |    5 +----
+ m4/Makefile.am |    2 +-
+ m4/gtk-doc.m4  |    1 -
+ 5 files changed, 8 insertions(+), 12 deletions(-)
+ delete mode 120000 m4/gtk-doc.m4
+
+diff --git a/Makefile.am b/Makefile.am
+index 296203f..0aebfec 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,8 +1,8 @@
+ ACLOCAL_AMFLAGS = -I m4
+ GLIB_PC=dbus-glib-1.pc
+ 
+-SUBDIRS=dbus tools test doc
+-DIST_SUBDIRS=dbus tools test doc m4
++SUBDIRS=dbus tools test
++DIST_SUBDIRS=dbus tools test m4
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = $(GLIB_PC)
+@@ -20,7 +20,7 @@ EXTRA_DIST =			\
+ 
+ MAINTAINERCLEANFILES = ChangeLog
+ 
+-DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc --enable-checks --enable-tests
++DISTCHECK_CONFIGURE_FLAGS=--disable-gtk-doc --enable-checks --enable-tests
+ EXTRA_DIST += ChangeLog
+ 
+ ChangeLog:
+diff --git a/autogen.sh b/autogen.sh
+index a7c8129..f6fc9fc 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -113,8 +113,8 @@ version_check automake AUTOMAKE "$automake_progs" 1.9 \
+ ACLOCAL=`echo $AUTOMAKE | sed s/automake/aclocal/`
+ ACLOCAL="$ACLOCAL $ACLOCAL_FLAGS"
+ 
+-version_check gtkdoc GTKDOC 'gtkdoc-scan' 1.6 \
+-   "http://ftp.gnome.org/pub/GNOME/sources/gtk-doc/" || DIE=1
++#version_check gtkdoc GTKDOC 'gtkdoc-scan' 1.6 \
++#   "http://ftp.gnome.org/pub/GNOME/sources/gtk-doc/" || DIE=1
+ 
+ test $TEST_TYPE $FILE || {
+ 	printbold "You must run this script in the top-level $PROJECT directory"
+@@ -132,7 +132,7 @@ fi
+ 
+ 
+ libtoolize --force || echo "libtoolize failed"
+-gtkdocize || echo "gtkdocize failed"
++#gtkdocize || echo "gtkdocize failed"
+ 
+ export AUTOMAKE ACLOCAL
+ autoreconf --install || exit 1
+diff --git a/configure.ac b/configure.ac
+index c9b2863..eae2749 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -355,7 +355,7 @@ AC_SUBST(DBUS_GLIB_TOOL_CFLAGS)
+ AC_SUBST(DBUS_GLIB_TOOL_LIBS)
+ 
+ ### gtk-doc Documentation
+-GTK_DOC_CHECK(1.4)
++#GTK_DOC_CHECK(1.4)
+ 
+ #### Have to go $localstatedir->$prefix/var->/usr/local/var   
+ #### someone please fix this a better way...
+@@ -438,9 +438,6 @@ AC_DEFINE_UNQUOTED(DBUS_TEST_SOCKET_DIR, "$TEST_SOCKET_DIR", [Where to put test
+ AC_OUTPUT([
+ Makefile
+ m4/Makefile
+-doc/Makefile
+-doc/reference/Makefile
+-doc/reference/version.xml
+ dbus/Makefile
+ dbus/examples/Makefile
+ dbus/examples/statemachine/Makefile
+diff --git a/m4/Makefile.am b/m4/Makefile.am
+index e2f06ce..f2e77c3 100644
+--- a/m4/Makefile.am
++++ b/m4/Makefile.am
+@@ -1 +1 @@
+-EXTRA_DIST = gtk-doc.m4
++#EXTRA_DIST = gtk-doc.m4
+diff --git a/m4/gtk-doc.m4 b/m4/gtk-doc.m4
+deleted file mode 120000
+index d214c6a..0000000
+--- a/m4/gtk-doc.m4
++++ /dev/null
+@@ -1 +0,0 @@
+-/usr/share/aclocal/gtk-doc.m4
+\ No newline at end of file
+-- 
+1.7.9.5
+

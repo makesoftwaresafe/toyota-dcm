@@ -1,0 +1,43 @@
+From 1d3443e6e9057031cf8870964a5c10d9af0f3f5f Mon Sep 17 00:00:00 2001
+From: Alan Garcia <alan.garcia@continental-corporation.com>
+Date: Thu, 5 Sep 2013 15:28:06 -0500
+Subject: [PATCH 04/15] Failed to write entry, ignoring invalid argument error
+
+After various reboot cycles journald starts to spam the console with
+this message and do not store any message.
+
+Ticket-Id: BZ482, BZ468
+Change-Id: Ic6b80ed1aa93e2fa3ecde8b9219410dd2a4f2f4d
+---
+ src/journal/journal-file.c |    8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
+index 1236403..8e3a868 100644
+--- a/src/journal/journal-file.c
++++ b/src/journal/journal-file.c
+@@ -1314,10 +1314,6 @@ int journal_file_append_entry(JournalFile *f, const dual_timestamp *ts, const st
+                 ts = &_ts;
+         }
+ 
+-        if (f->tail_entry_monotonic_valid &&
+-            ts->monotonic < le64toh(f->header->tail_entry_monotonic))
+-                return -EINVAL;
+-
+ #ifdef HAVE_GCRYPT
+         r = journal_file_maybe_append_tag(f, ts->realtime);
+         if (r < 0)
+@@ -2665,10 +2661,6 @@ int journal_file_copy_entry(JournalFile *from, JournalFile *to, Object *o, uint6
+         ts.monotonic = le64toh(o->entry.monotonic);
+         ts.realtime = le64toh(o->entry.realtime);
+ 
+-        if (to->tail_entry_monotonic_valid &&
+-            ts.monotonic < le64toh(to->header->tail_entry_monotonic))
+-                return -EINVAL;
+-
+         n = journal_file_entry_n_items(o);
+         items = alloca(sizeof(EntryItem) * n);
+ 
+-- 
+1.7.9.5
+

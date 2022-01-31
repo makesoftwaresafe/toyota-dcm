@@ -1,0 +1,55 @@
+From c2a0fdc4e6d106690d7fd8fa1677e133c94e155d Mon Sep 17 00:00:00 2001
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Date: Wed, 23 Feb 2011 22:44:05 +0800
+Subject: [PATCH 12/32] __xmlRaiseError: fix use of the structured callback
+ channel
+
+If the structured callback channel is initialized, do not perform
+unneeded initialization of the old callback channel to avoid
+clobbering of the structured callback channel's data.
+---
+ error.c |   21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
+
+diff --git a/error.c b/error.c
+index 9c0f6bb..a891faa 100644
+--- a/error.c
++++ b/error.c
+@@ -584,6 +584,11 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
+     if (to != &xmlLastError)
+         xmlCopyError(to,&xmlLastError);
+ 
++    if (schannel != NULL) {
++	schannel(data, to);
++	return;
++    }
++
+     /*
+      * Find the callback channel if channel param is NULL
+      */
+@@ -595,19 +600,9 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
+ 	    channel = ctxt->sax->error;
+ 	data = ctxt->userData;
+     } else if (channel == NULL) {
+-        if ((schannel == NULL) && (xmlStructuredError != NULL)) {
+-	    schannel = xmlStructuredError;
+-	    data = xmlStructuredErrorContext;
+-	} else {
+-	    channel = xmlGenericError;
+-	    if (!data) {
+-		data = xmlGenericErrorContext;
+-	    }
+-	}
+-    }
+-    if (schannel != NULL) {
+-        schannel(data, to);
+-	return;
++	channel = xmlGenericError;
++	if (!data)
++	    data = xmlGenericErrorContext;
+     }
+     if (channel == NULL)
+         return;
+-- 
+1.7.9.5
+

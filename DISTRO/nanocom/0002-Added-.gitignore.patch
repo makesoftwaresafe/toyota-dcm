@@ -1,0 +1,20 @@
+From f7da1174db197e4f42b9548950b8bb2889f56f1b Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Sat, 19 Nov 2011 19:09:39 -0600
+Subject: [PATCH 2/2] Added .gitignore
+
+---
+ .gitignore |    1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..5021409
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1 @@
++nanocom
+-- 
+1.7.9.5
+

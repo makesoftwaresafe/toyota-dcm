@@ -1,0 +1,23 @@
+From 12fda91a96c7ad09bd82fccbf3a580080d76beef Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Wed, 27 Feb 2013 14:03:11 -0600
+Subject: [PATCH 6/8] Added .gitignore
+
+Ticket-Id: BZ321
+Change-Id: Iad44a54b61b4d833a0340664783a1c697fb1939a
+---
+ .gitignore |    2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..e9b2de2
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,2 @@
++build/
++libc/manual/pkgvers.texi
+-- 
+1.7.9.5
+

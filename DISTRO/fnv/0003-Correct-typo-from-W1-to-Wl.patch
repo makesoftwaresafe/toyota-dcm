@@ -1,0 +1,26 @@
+From cec71fe5043167baec5e85a539f7bad07eff0826 Mon Sep 17 00:00:00 2001
+From: Jerry Fox <Jerry.Fox@Continental-Corporation.com>
+Date: Tue, 22 Apr 2014 15:35:55 -0500
+Subject: [PATCH 3/3] Correct typo from -W1 to -Wl
+
+Change-Id: I4a638f80f82866790999079912985284934e5054
+---
+ Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 0722c0f..d6a9e5f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -115,7 +115,7 @@ fnv064: fnv64.o
+ #	${RANLIB} $@
+ libfnv.so: ${LIBOBJ}
+ 	rm -f $@
+-	${CC} -shared -W1,-soname,libfnv.so -o libfnv.so ${LIBOBJ}
++	${CC} -shared -Wl,-soname,libfnv.so -o libfnv.so ${LIBOBJ}
+ 
+ fnv132: fnv032
+ 	-rm -f $@
+-- 
+1.7.9.5
+

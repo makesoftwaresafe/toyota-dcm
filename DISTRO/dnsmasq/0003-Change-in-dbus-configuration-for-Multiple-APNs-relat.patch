@@ -1,0 +1,33 @@
+From 551d413c8ea488256f7c15ff97a13307920f37ab Mon Sep 17 00:00:00 2001
+From: kalyan majumder <Kalyan.Majumderi-EXT@continental-corporation.com>
+Date: Fri, 4 Mar 2016 17:41:56 +0530
+Subject: [PATCH 3/4] Change in dbus configuration for Multiple APNs related
+ support
+
+Ticket-Id:Toy_Dpk#615
+Change-Id: I84d87d10f02fb3e0d045a010519c878a1bdc6419
+---
+ dbus/dnsmasq.conf |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/dbus/dnsmasq.conf b/dbus/dnsmasq.conf
+index 82b1c76..e5fc4a5 100644
+--- a/dbus/dnsmasq.conf
++++ b/dbus/dnsmasq.conf
+@@ -6,9 +6,12 @@
+ 		<allow own="uk.org.thekelleys.dnsmasq"/>
+ 		<allow send_destination="uk.org.thekelleys.dnsmasq"/>
+ 	</policy>
++        <policy user="dnsmasq">
++                <allow own="uk.org.thekelleys.dnsmasq"/>
++                <allow send_destination="uk.org.thekelleys.dnsmasq"/>
++        </policy>
+ 	<policy context="default">
+                 <deny own="uk.org.thekelleys.dnsmasq"/>
+                 <deny send_destination="uk.org.thekelleys.dnsmasq"/>
+         </policy>
+ </busconfig>
+-
+-- 
+1.7.9.5
+

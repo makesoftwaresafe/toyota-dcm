@@ -1,0 +1,32 @@
+From b807b20073195b8019eeb796058f4c0be826e000 Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Tue, 6 Mar 2012 13:20:44 -0600
+Subject: [PATCH] initial .gitignore.
+
+Change-Id: I3b6f3eecfbbb13fe75800847245f2a1bed04bb20
+---
+ .gitignore |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..fb0095d
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,12 @@
++.libs
++Makefile
++config.*
++expat_config.h
++lib/.libs
++lib/*.lo
++*.la
++libtool
++xmlwf/.libs
++xmlwf/*.o
++xmlwf/xmlwf
++expat.pc
+-- 
+1.7.9.5
+

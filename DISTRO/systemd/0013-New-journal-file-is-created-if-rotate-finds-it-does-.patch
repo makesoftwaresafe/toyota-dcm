@@ -1,0 +1,34 @@
+From d3273851d8876054d62731f9e33e1bf4d8cd82cb Mon Sep 17 00:00:00 2001
+From: Raul Aldana <raul.aldana@continental-corporation.com>
+Date: Mon, 6 Oct 2014 15:07:24 -0700
+Subject: [PATCH 13/15] New journal file is created if rotate finds it does
+ not exist
+
+Instead of returning an error when the rename fails because
+system.journal doesn't exist systemd now continues the rotate
+function to create the file.
+
+Ticket-Id: OTP_Dpk#73
+Change-Id: Idcc8c5e58dfb5345ef0534fdeee41065892e00c7
+Signed-off-by: Raul Aldana <raul.aldana@continental-corporation.com>
+---
+ src/journal/journal-file.c |    3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
+index 522ea01..a297515 100644
+--- a/src/journal/journal-file.c
++++ b/src/journal/journal-file.c
+@@ -2584,9 +2584,6 @@ int journal_file_rotate(JournalFile **f, bool compress, bool seal) {
+         r = rename(old_file->path, p);
+         free(p);
+ 
+-        if (r < 0)
+-                return -errno;
+-
+         old_file->header->state = STATE_ARCHIVED;
+ 
+         r = journal_file_open(old_file->path, old_file->flags, old_file->mode, compress, seal, NULL, old_file->mmap, old_file, &new_file);
+-- 
+1.7.9.5
+

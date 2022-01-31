@@ -1,0 +1,38 @@
+From a129732fb45fc424743f26f01c906e4514f11521 Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Tue, 8 May 2012 19:14:40 +0200
+Subject: [PATCH 03/28] examples: Use a common LDADD for all examples
+
+---
+ examples/Makefile.am |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/examples/Makefile.am b/examples/Makefile.am
+index c7630d2..64d98b9 100644
+--- a/examples/Makefile.am
++++ b/examples/Makefile.am
+@@ -1,12 +1,11 @@
+ INCLUDES = -I$(top_srcdir)/libusb
++LDADD = ../libusb/libusb-1.0.la
+ noinst_PROGRAMS = listdevs
+ 
+ listdevs_SOURCES = listdevs.c
+-listdevs_LDADD = ../libusb/libusb-1.0.la
+ 
+ if HAVE_SIGACTION
+ dpfp_SOURCES = dpfp.c
+-dpfp_LDADD = ../libusb/libusb-1.0.la
+ noinst_PROGRAMS += dpfp
+ endif
+ 
+@@ -14,7 +13,6 @@ if THREADS_POSIX
+ if HAVE_SIGACTION
+ dpfp_threaded_SOURCES = dpfp_threaded.c
+ dpfp_threaded_CFLAGS = $(THREAD_CFLAGS) $(AM_CFLAGS)
+-dpfp_threaded_LDADD = ../libusb/libusb-1.0.la
+ noinst_PROGRAMS += dpfp_threaded
+ endif
+ endif
+-- 
+1.7.9.5
+

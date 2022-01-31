@@ -1,0 +1,38 @@
+From 9e1bb81c7e9d2c402ac62e3955af144e49f96ad8 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@medozas.de>
+Date: Sun, 18 Dec 2011 20:20:33 +0100
+Subject: [PATCH 15/19] Update .gitignore
+
+Only ignore these paths if they are a directory.
+---
+ .gitignore |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 3e7def5..deed221 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -6,9 +6,9 @@
+ *.oo
+ *.so
+ *.o
+-.deps
++.deps/
+ .dirstamp
+-.libs
++.libs/
+ Makefile
+ Makefile.in
+ 
+@@ -22,7 +22,7 @@ Makefile.in
+ /include/iptables/internal.h
+ 
+ /aclocal.m4
+-/autom4te*.cache
++/autom4te.cache/
+ /compile
+ /config.guess
+ /config.h*
+-- 
+1.7.9.5
+

@@ -1,0 +1,32 @@
+From e2461b253424e8c810d8270e3f9244761fb15fce Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Mon, 11 Nov 2013 16:35:44 -0600
+Subject: [PATCH 1/2] Made gdbus-codegen relocatable
+
+Ticket-Id: BZ548
+Change-Id: I8b3ad10d3201664d6a4e64d5fb4d7fcc2d711671
+---
+ gio/gdbus-2.0/codegen/gdbus-codegen.in |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/gio/gdbus-2.0/codegen/gdbus-codegen.in b/gio/gdbus-2.0/codegen/gdbus-codegen.in
+index 217c755..32bc1b0 100644
+--- a/gio/gdbus-2.0/codegen/gdbus-codegen.in
++++ b/gio/gdbus-2.0/codegen/gdbus-codegen.in
+@@ -29,11 +29,9 @@ srcdir = os.getenv('UNINSTALLED_GLIB_SRCDIR', None)
+ 
+ if srcdir is not None:
+     path = os.path.join(srcdir, 'gio', 'gdbus-2.0')
+-elif os.name == 'nt':
+-    # Makes gdbus-codegen 'relocatable' at runtime on Windows.
++else :
++    # Makes gdbus-codegen 'relocatable' at runtime
+     path = os.path.join(os.path.dirname(__file__), '..', 'lib', 'gdbus-2.0')
+-else:
+-    path = os.path.join('@libdir@', 'gdbus-2.0')
+ 
+ sys.path.insert(0, os.path.abspath(path))
+ from codegen import codegen_main
+-- 
+1.7.9.5
+

@@ -1,0 +1,32 @@
+From 8bb12988c4ddcaf30729c04c35bf3f4afab5370a Mon Sep 17 00:00:00 2001
+From: Toyoda Eizi <toyoda.eizi@gmail.com>
+Date: Thu, 4 Aug 2011 16:40:48 +0800
+Subject: [PATCH 29/32] Fix XSD validation bug #630130
+
+This bug in xmlschemas made validation with the GML Schemas fail
+Test cases to be commited separately
+---
+ xmlschemas.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/xmlschemas.c b/xmlschemas.c
+index 5de7ca5..ddb31d6 100644
+--- a/xmlschemas.c
++++ b/xmlschemas.c
+@@ -15156,9 +15156,10 @@ xmlSchemaCheckSTPropsCorrect(xmlSchemaParserCtxtPtr ctxt,
+ 	FREE_AND_NULL(str)
+ 	return (XML_SCHEMAP_ST_PROPS_CORRECT_1);
+     }
+-    if ( (WXS_IS_LIST(type) || WXS_IS_UNION(type)) &&
+-	 (WXS_IS_RESTRICTION(type) == 0) &&
+-	 (! WXS_IS_ANY_SIMPLE_TYPE(baseType))) {
++    if ((WXS_IS_LIST(type) || WXS_IS_UNION(type)) &&
++	(WXS_IS_RESTRICTION(type) == 0) &&
++	((! WXS_IS_ANY_SIMPLE_TYPE(baseType)) &&
++         (baseType->type != XML_SCHEMA_TYPE_SIMPLE))) {
+ 	xmlSchemaPCustomErr(ctxt,
+ 	    XML_SCHEMAP_ST_PROPS_CORRECT_1,
+ 	    WXS_BASIC_CAST type, NULL,
+-- 
+1.7.9.5
+

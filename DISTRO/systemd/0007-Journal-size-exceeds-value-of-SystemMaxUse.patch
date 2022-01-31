@@ -1,0 +1,39 @@
+From 7370304e820f22e73c1ea407fdfda492191ca3b6 Mon Sep 17 00:00:00 2001
+From: Alan Garcia <alan.garcia@continental-corporation.com>
+Date: Mon, 4 Nov 2013 10:31:02 -0600
+Subject: [PATCH 07/15] Journal size exceeds value of SystemMaxUse
+
+Journal doesn't respect the value specified in SystemMaxUse and grows
+without limits and taking all the space in data volume. It also resolves
+other issues of corruption.
+
+Ticket-Id: BZ526, BZ525, BZ482
+Change-Id: I81b296da24131a70f4b3e015434813f2c5057f24
+---
+ src/journal/journal-file.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
+index 8e3a868..6934080 100644
+--- a/src/journal/journal-file.c
++++ b/src/journal/journal-file.c
+@@ -2495,8 +2495,14 @@ int journal_file_open(
+ 
+         if (f->writable) {
+                 if (metrics) {
+-                        journal_default_metrics(metrics, f->fd);
+-                        f->metrics = *metrics;
++
++			/* Apply default metrics only when metrics parameter still
++			   have initialization values (0xFF) */
++
++			if(metrics->max_size == (uint64_t) -1)
++				journal_default_metrics(metrics, f->fd);
++
++			f->metrics = *metrics;
+                 } else if (template)
+                         f->metrics = template->metrics;
+ 
+-- 
+1.7.9.5
+

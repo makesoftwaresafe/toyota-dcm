@@ -1,0 +1,28 @@
+From ae874211d4c4cd1044d9fe5d598049a99526822b Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Wed, 17 Nov 2010 14:10:39 +0100
+Subject: [PATCH 05/32] 634846 Remove a linking option breaking Windows VC10
+
+as pointed out by David Connet <dcon@agilityrecordbook.com>
+---
+ win32/Makefile.msvc |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/win32/Makefile.msvc b/win32/Makefile.msvc
+index ff4c960..33cb4db 100644
+--- a/win32/Makefile.msvc
++++ b/win32/Makefile.msvc
+@@ -94,7 +94,9 @@ CFLAGS = $(CFLAGS) /D "_DEBUG" /Od /Z7
+ LDFLAGS = $(LDFLAGS) /DEBUG
+ !else
+ CFLAGS = $(CFLAGS) /D "NDEBUG" /O2 
+-LDFLAGS = $(LDFLAGS) /OPT:NOWIN98
++# commented out as this break VC10 c.f. 634846
++# LDFLAGS = $(LDFLAGS) /OPT:NOWIN98
++LDFLAGS = $(LDFLAGS)
+ !endif
+ 
+ # Libxml object files.
+-- 
+1.7.9.5
+

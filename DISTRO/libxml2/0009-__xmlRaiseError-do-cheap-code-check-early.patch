@@ -1,0 +1,35 @@
+From 111d705c282e03e7202723c6c7e4499f8582bd4f Mon Sep 17 00:00:00 2001
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Date: Wed, 23 Feb 2011 22:14:19 +0800
+Subject: [PATCH 09/32] __xmlRaiseError: do cheap code check early
+
+if error code is XML_ERR_OK return immediately
+---
+ error.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/error.c b/error.c
+index 7508d41..34472eb 100644
+--- a/error.c
++++ b/error.c
+@@ -452,6 +452,8 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
+     xmlErrorPtr to = &xmlLastError;
+     xmlNodePtr baseptr = NULL;
+ 
++    if (code == XML_ERR_OK)
++        return;
+     if ((xmlGetWarningsDefaultValue == 0) && (level == XML_ERR_WARNING))
+         return;
+     if ((domain == XML_FROM_PARSER) || (domain == XML_FROM_HTML) ||
+@@ -481,8 +483,6 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
+ 	    (ctxt->sax->initialized == XML_SAX2_MAGIC))
+ 	    schannel = ctxt->sax->serror;
+     }
+-    if (code == XML_ERR_OK)
+-        return;
+     /*
+      * Formatting the message
+      */
+-- 
+1.7.9.5
+

@@ -1,0 +1,23 @@
+From 8dc8b977d796b227f59eb5a7b247b38e27748d52 Mon Sep 17 00:00:00 2001
+From: Ludovic Rousseau <ludovic.rousseau@gmail.com>
+Date: Fri, 4 May 2012 16:56:00 +0100
+Subject: [PATCH 09/28] autogen.sh: Exit script on first error
+
+libusbx.git commit c74fe3ab703a28c6d8c3755213e3736c5d1eb35e
+---
+ autogen.sh |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/autogen.sh b/autogen.sh
+index c7bb679..8b512e5 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -1,4 +1,5 @@
+ #!/bin/sh
++set -e
+ 
+ # use libtoolize if available, otherwise look for glibtoolize (darwin)
+ if (libtoolize --version) < /dev/null > /dev/null 2>&1; then
+-- 
+1.7.9.5
+

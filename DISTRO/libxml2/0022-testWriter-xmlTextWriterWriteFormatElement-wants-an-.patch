@@ -1,0 +1,63 @@
+From 4ea1866f7d98d7c0fceec0f5788b769977c1e7ee Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Mon, 9 May 2011 11:45:23 +0300
+Subject: [PATCH 22/32] testWriter: xmlTextWriterWriteFormatElement wants an
+ int instead of a long int
+
+Fixes compiler warnings about wrong argument type.
+---
+ doc/examples/testWriter.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/doc/examples/testWriter.c b/doc/examples/testWriter.c
+index e158f97..9bf590f 100644
+--- a/doc/examples/testWriter.c
++++ b/doc/examples/testWriter.c
+@@ -160,7 +160,7 @@ testXmlwriterFilename(const char *uri)
+ 
+     /* Write an element named "X_ORDER_ID" as child of HEADER. */
+     rc = xmlTextWriterWriteFormatElement(writer, BAD_CAST "X_ORDER_ID",
+-                                         "%010d", 53535L);
++                                         "%010d", 53535);
+     if (rc < 0) {
+         printf
+             ("testXmlwriterFilename: Error at xmlTextWriterWriteFormatElement\n");
+@@ -439,7 +439,7 @@ testXmlwriterMemory(const char *file)
+ 
+     /* Write an element named "X_ORDER_ID" as child of HEADER. */
+     rc = xmlTextWriterWriteFormatElement(writer, BAD_CAST "X_ORDER_ID",
+-                                         "%010d", 53535L);
++                                         "%010d", 53535);
+     if (rc < 0) {
+         printf
+             ("testXmlwriterMemory: Error at xmlTextWriterWriteFormatElement\n");
+@@ -468,7 +468,7 @@ testXmlwriterMemory(const char *file)
+     /* Write an element named "NAME_2" as child of HEADER. */
+     tmp = ConvertInput("Jörg", MY_ENCODING);
+     rc = xmlTextWriterWriteElement(writer, BAD_CAST "NAME_2", tmp);
+-                                   
++
+     if (rc < 0) {
+         printf
+             ("testXmlwriterMemory: Error at xmlTextWriterWriteElement\n");
+@@ -709,7 +709,7 @@ testXmlwriterDoc(const char *file)
+ 
+     /* Write an element named "X_ORDER_ID" as child of HEADER. */
+     rc = xmlTextWriterWriteFormatElement(writer, BAD_CAST "X_ORDER_ID",
+-                                         "%010d", 53535L);
++                                         "%010d", 53535);
+     if (rc < 0) {
+         printf
+             ("testXmlwriterDoc: Error at xmlTextWriterWriteFormatElement\n");
+@@ -975,7 +975,7 @@ testXmlwriterTree(const char *file)
+ 
+     /* Write an element named "X_ORDER_ID" as child of HEADER. */
+     rc = xmlTextWriterWriteFormatElement(writer, BAD_CAST "X_ORDER_ID",
+-                                         "%010d", 53535L);
++                                         "%010d", 53535);
+     if (rc < 0) {
+         printf
+             ("testXmlwriterTree: Error at xmlTextWriterWriteFormatElement\n");
+-- 
+1.7.9.5
+

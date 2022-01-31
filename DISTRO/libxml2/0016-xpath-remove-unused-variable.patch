@@ -1,0 +1,25 @@
+From a15404034cb5de45a70114b16c60b20494ecc6e9 Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Fri, 6 May 2011 17:03:51 +0300
+Subject: [PATCH 16/32] xpath: remove unused variable
+
+As noted by gcc, this variable is not beeing used.
+---
+ xpath.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/xpath.c b/xpath.c
+index 608fe00..b59ac5a 100644
+--- a/xpath.c
++++ b/xpath.c
+@@ -10044,7 +10044,6 @@ static void
+ xmlXPathCompNumber(xmlXPathParserContextPtr ctxt)
+ {
+     double ret = 0.0;
+-    double mult = 1;
+     int ok = 0;
+     int exponent = 0;
+     int is_exponent_negative = 0;
+-- 
+1.7.9.5
+

@@ -1,0 +1,11 @@
+/home/uidj7648/Workspace/toyota-1.19.3/package/opensource/eglibc/build/dummy.o: \
+ /home/uidj7648/Workspace/toyota-1.19.3/package/opensource/eglibc/build/dummy.c \
+ ../include/libc-symbols.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/package/opensource/eglibc/build/config.h \
+ ../sysdeps/wordsize-32/symbol-hacks.h
+
+../include/libc-symbols.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/package/opensource/eglibc/build/config.h:
+
+../sysdeps/wordsize-32/symbol-hacks.h:

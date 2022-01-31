@@ -1,0 +1,27 @@
+From 4f0e4ea44c8707edc114b8386b915120a4be2c8e Mon Sep 17 00:00:00 2001
+From: Brandon Jones <brandon.jones@continental-corporation.com>
+Date: Fri, 21 Feb 2014 16:22:13 -0600
+Subject: [PATCH 11/15] Add libsystemd-label.la to fix undefined reference to
+ 'cg_create'
+
+Ticket-Id: BZ428
+Change-Id: I0becd0038e8061ff94767d2a855e1df2bcdb51f1
+---
+ Makefile.am |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Makefile.am b/Makefile.am
+index fb6f6bf..c3c0551 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -3772,6 +3772,7 @@ libsystemd_login_la_LDFLAGS = \
+ 	-Wl,--version-script=$(top_srcdir)/src/login/libsystemd-login.sym
+ 
+ libsystemd_login_la_LIBADD = \
++	libsystemd-label.la \
+ 	libsystemd-shared.la \
+ 	libsystemd-daemon-internal.la
+ 
+-- 
+1.7.9.5
+

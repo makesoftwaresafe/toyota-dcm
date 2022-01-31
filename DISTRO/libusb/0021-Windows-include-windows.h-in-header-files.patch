@@ -1,0 +1,39 @@
+From cf60da545c915905869fa4007fcdc5faa75fdcbb Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Sat, 4 Aug 2012 14:26:43 +0200
+Subject: [PATCH 21/28] Windows: #include <windows.h> in header files
+
+---
+ libusb/os/poll_windows.h    |    2 ++
+ libusb/os/threads_windows.h |    2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/libusb/os/poll_windows.h b/libusb/os/poll_windows.h
+index 6e5bf2b..d3bda47 100644
+--- a/libusb/os/poll_windows.h
++++ b/libusb/os/poll_windows.h
+@@ -21,6 +21,8 @@
+  */
+ #pragma once
+ 
++#include <windows.h>
++
+ #if defined(_MSC_VER)
+ // disable /W4 MSVC warnings that are benign
+ #pragma warning(disable:4127) // conditional expression is constant
+diff --git a/libusb/os/threads_windows.h b/libusb/os/threads_windows.h
+index 7bb144a..e486df9 100644
+--- a/libusb/os/threads_windows.h
++++ b/libusb/os/threads_windows.h
+@@ -21,6 +21,8 @@
+ #ifndef LIBUSB_THREADS_WINDOWS_H
+ #define LIBUSB_THREADS_WINDOWS_H
+ 
++#include <windows.h>
++
+ #define usbi_mutex_static_t     volatile LONG
+ #define USBI_MUTEX_INITIALIZER  0
+ 
+-- 
+1.7.9.5
+

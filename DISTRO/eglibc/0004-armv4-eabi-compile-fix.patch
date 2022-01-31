@@ -1,0 +1,32 @@
+From c10920d22cfb100ff9f119d74c8cd0ab92b941f9 Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Thu, 25 Oct 2012 15:36:23 -0500
+Subject: [PATCH 4/8] armv4 eabi compile fix
+
+Source: http://sourceware.org/bugzilla/show_bug.cgi?id=12097
+---
+ .../unix/sysv/linux/arm/eabi/libc-do-syscall.S     |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/ports/sysdeps/unix/sysv/linux/arm/eabi/libc-do-syscall.S b/ports/sysdeps/unix/sysv/linux/arm/eabi/libc-do-syscall.S
+index d461712..e1ce779 100644
+--- a/ports/sysdeps/unix/sysv/linux/arm/eabi/libc-do-syscall.S
++++ b/ports/sysdeps/unix/sysv/linux/arm/eabi/libc-do-syscall.S
+@@ -16,6 +16,8 @@
+    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+    02111-1307 USA.  */
+ 
++#if defined(__thumb__)
++
+ #include <sysdep.h>
+ 
+ /* Out-of-line syscall stub.  We expect the system call number in ip
+@@ -41,3 +43,5 @@ ENTRY (__libc_do_syscall)
+ 	pop	{r7, pc}
+ 	.fnend
+ END (__libc_do_syscall)
++
++#endif /* __thumb__ */
+-- 
+1.7.9.5
+

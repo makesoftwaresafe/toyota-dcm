@@ -1,0 +1,29 @@
+From d9dbb433f3f3b9787417e34316604d99cb72b188 Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Tue, 8 May 2012 19:19:28 +0200
+Subject: [PATCH 04/28] .gitignore: Add examples/ path to the examples
+
+---
+ .gitignore |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 88ea6d4..8eb36d8 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -24,9 +24,9 @@ config.status
+ config.sub
+ *.swp
+ doxygen.cfg
+-listdevs
+-dpfp
+-dpfp_threaded
++examples/listdevs
++examples/dpfp
++examples/dpfp_threaded
+ *.exe
+ *.pc
+ ChangeLog
+-- 
+1.7.9.5
+

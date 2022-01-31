@@ -1,0 +1,45 @@
+From de966beb07e9308425b7e093997d3b9e3f3d39ad Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Sun, 22 Jul 2012 10:32:01 -0500
+Subject: [PATCH 02/15] Default journal output to OUTPUT_SHORT_MONOTONIC
+
+This is more useful for embedded devices than the traditional
+timestamp that shows date and time without millisecond level
+resolution.
+
+Ticket-Id: BZ102
+Change-Id: I0851b966b853c559ec9edb88916ec601f8de116d
+---
+ src/journal/journalctl.c  |    2 +-
+ src/systemctl/systemctl.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/journal/journalctl.c b/src/journal/journalctl.c
+index 083a597..e992bf7 100644
+--- a/src/journal/journalctl.c
++++ b/src/journal/journalctl.c
+@@ -60,7 +60,7 @@
+ 
+ #define DEFAULT_FSS_INTERVAL_USEC (15*USEC_PER_MINUTE)
+ 
+-static OutputMode arg_output = OUTPUT_SHORT;
++static OutputMode arg_output = OUTPUT_SHORT_MONOTONIC;
+ static bool arg_pager_end = false;
+ static bool arg_follow = false;
+ static bool arg_full = false;
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 9f47b2c..d002b17 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -131,7 +131,7 @@ static enum transport {
+ static char *arg_host = NULL;
+ static char *arg_user = NULL;
+ static unsigned arg_lines = 10;
+-static OutputMode arg_output = OUTPUT_SHORT;
++static OutputMode arg_output = OUTPUT_SHORT_MONOTONIC;
+ static bool arg_plain = false;
+ 
+ static bool private_bus = false;
+-- 
+1.7.9.5
+

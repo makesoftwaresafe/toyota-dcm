@@ -1,0 +1,11 @@
+/home/uidj7648/Workspace/toyota-1.19.3/package/opensource/eglibc/build/nscd/libc-do-syscall.o: \
+ ../ports/sysdeps/unix/sysv/linux/arm/eabi/libc-do-syscall.S \
+ ../include/libc-symbols.h \
+ /home/uidj7648/Workspace/toyota-1.19.3/package/opensource/eglibc/build/config.h \
+ ../sysdeps/wordsize-32/symbol-hacks.h
+
+../include/libc-symbols.h:
+
+/home/uidj7648/Workspace/toyota-1.19.3/package/opensource/eglibc/build/config.h:
+
+../sysdeps/wordsize-32/symbol-hacks.h:

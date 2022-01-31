@@ -1,0 +1,24 @@
+From 4c4653e587838a2cc78ddc03cb77749198f12c6b Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Sun, 5 Jun 2011 11:29:29 +0800
+Subject: [PATCH 28/32] Add exception for new W3C PI xml-model
+
+---
+ parser.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/parser.c b/parser.c
+index 02a1877..826284c 100644
+--- a/parser.c
++++ b/parser.c
+@@ -197,6 +197,7 @@ unsigned int xmlParserMaxDepth = 256;
+ 
+ static const char *xmlW3CPIs[] = {
+     "xml-stylesheet",
++    "xml-model",
+     NULL
+ };
+ 
+-- 
+1.7.9.5
+

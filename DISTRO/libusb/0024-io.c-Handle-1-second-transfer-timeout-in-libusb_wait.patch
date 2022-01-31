@@ -1,0 +1,26 @@
+From 2b044abace76ba0095ee5dbc71a7dac75e8c8f05 Mon Sep 17 00:00:00 2001
+From: Pete Batard <pete@akeo.ie>
+Date: Wed, 22 Aug 2012 01:32:10 -0700
+Subject: [PATCH 24/28] io.c: Handle >= 1 second transfer timeout in
+ libusb_wait_for_event()
+
+---
+ libusb/io.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libusb/io.c b/libusb/io.c
+index d858bb7..3e72604 100644
+--- a/libusb/io.c
++++ b/libusb/io.c
+@@ -1747,7 +1747,7 @@ int API_EXPORTED libusb_wait_for_event(libusb_context *ctx, struct timeval *tv)
+ 
+ 	timeout.tv_sec += tv->tv_sec;
+ 	timeout.tv_nsec += tv->tv_usec * 1000;
+-	if (timeout.tv_nsec > 1000000000) {
++	while (timeout.tv_nsec >= 1000000000) {
+ 		timeout.tv_nsec -= 1000000000;
+ 		timeout.tv_sec++;
+ 	}
+-- 
+1.7.9.5
+

@@ -1,0 +1,7 @@
+"Compiled on a Linux 3.0.21 system on 2016-08-19.\n"
+"Available extensions:\n"
+"	crypt add-on version 2.1 by Michael Glad and others\n"
+"	GNU Libidn by Simon Josefsson\n"
+"	Native POSIX Threads Library by Ulrich Drepper et al\n"
+"	Support for some architectures added on, not maintained in glibc core.\n"
+"	BIND-8.2.3-T5B\n"

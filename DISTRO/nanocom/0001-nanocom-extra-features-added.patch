@@ -1,0 +1,808 @@
+From 164f9ff4e2cf50c506a0a6a1bea14b8acd53818e Mon Sep 17 00:00:00 2001
+From: Jesus Gutierrez <Jesus.2.Gutierrez@continental-corporation.com>
+Date: Sat, 19 Nov 2011 19:06:02 -0600
+Subject: [PATCH 1/2] nanocom extra features added
+
+1. Capability to receive input from a text file or stdin pipe.
+2. Capability to parse formatted hexadecimal ascii characters and convert
+them into their respective decimal values.
+3. Capability to encapsulate parsed data into a TSERBIN protocol packet.
+4. On-console menu to step through the lines of the input file.
+5. Capability to redirect port's input to an output file.
+
+(From CCase patch 0001-nanocom-extra-features.patch submitted on
+March 13, 2011)
+---
+ Makefile  |    8 +-
+ extra.c   |  472 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ menu.c    |   30 +++-
+ mux.c     |   32 +++--
+ nanocom.c |   56 ++++++--
+ nanocom.h |   10 +-
+ 6 files changed, 580 insertions(+), 28 deletions(-)
+ create mode 100644 extra.c
+
+diff --git a/Makefile b/Makefile
+index df28d22..a313efb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,9 +16,9 @@ CC=gcc
+ 
+ all: clean nanocom
+ 
+-nanocom: 
+-	$(CC) mux.c nanocom.c menu.c -o nanocom
++nanocom: clean
++	$(CC) mux.c nanocom.c menu.c extra.c -o nanocom
+     
+ clean:
+-	rm -rf *.o nanocom
+-    
+\ No newline at end of file
++	rm -rf *.o nanocom *~
++
+diff --git a/extra.c b/extra.c
+new file mode 100644
+index 0000000..48503c5
+--- /dev/null
++++ b/extra.c
+@@ -0,0 +1,472 @@
++/***************************************************************************
++** File: extra.c
++** Author: jesus.2.gutierrez@continental-corporation.com
++** (C) Continental Corporation 2010. All rights reserved.
++**
++** Description:
++** This file adds the following features to nanocom:
++**
++** 1. Capability to receive input from a text file or stdin pipe.
++** 2. Capability to parse formatted hexadecimal ascii characters and convert
++**    them into their respective decimal values.
++** 3. Capability to encapsulate parsed data into a TSERBIN protocol packet.
++** 4. On-console menu to step through the lines of the input file.
++** 5. Capability to redirect port's input to an output file.
++**
++** Example of commands in the input file:
++** (HELLO!)48,45,4c,4C,4f,21
++** (ByE!)42,79,45,21
++**
++** Example of parsing data from stdin pipe and sending it to the port:
++** echo '89,F0,aF,62,00,1B' | nanocom -b115200 -s1 -pn -en -fn -d8 -D
++**
++****************************************************************************
++** This program is free software; you can redistribute it and/or
++** modify it under the terms of the GNU General Public License
++** as published by the Free Software Foundation; either version 2
++** of the License, or (at your option) any later version.
++**
++** This program is distributed in the hope that it will be useful,
++** but WITHOUT ANY WARRANTY; without even the implied warranty of
++** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++** GNU General Public License for more details at www.gnu.org
++**
++** You should have received a copy of the GNU General Public License
++** along with this program; if not, write to the Free Software
++** Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++*****************************************************************************/
++
++#include "nanocom.h"
++#include <ctype.h>
++
++typedef struct
++{
++	byte * bytes;   /* The buffer containing the bytes extracted from the line */
++	int size;       /* The number of bytes extracted from the text line */
++} buffer;
++
++typedef struct
++{
++	char * title;
++	char * bytes;
++} command;
++
++/** Global variables */
++extern char * file_path;             /* System path to the input file, passed via '-I' command-line argument */
++FILE * output_file = NULL;           /* File stream pointer to the log file*/
++static FILE * input_file = NULL;     /* File stream pointer to the input file */
++static char * file_line = NULL;      /* Pointer to the string (line) being read from the text file */
++static char   delim_title[] = ")";   /* Delimeter used to parse the title from the text line */
++static char   delim_byte[] = ",";    /* Delimeter used to parse the bytes from the text line */
++static int    delim_flag = -1;       /* Flag to control delimeters customization */
++
++/** Static function definitions */
++static int send_command(int fd, const char *str);
++static int str_to_bytes(char *str, char *delim, buffer *data);
++static int to_packet(buffer *data);
++static int send_data(int fd, buffer *buf, int protocol);
++static int to_byte(const char *hex_chars);
++
++/** Auxiliary functions */
++void  _clear_(int count);
++void* _free_(void *ptr);
++
++
++/**
++ * \brief           Opens a text file for reading and displays the file menu.
++ * @param is_open   FALSE - To try opening the input file and display the menu.
++ *                  TRUE - To display the menu, without opening the input file.
++ * @returns         FALSE - When the input file could not be opened for reading.
++ *                  TRUE - When the menu was displayed or the file was opened.
++ */
++int file_input_menu(int is_open)
++{
++	int ret = TRUE;
++	char menu[] =
++		"\n************Input File Menu***********\n"
++		" space - Show next line from file\n"
++		" enter - Parse line and send bytes to the port\n"
++		" t - Set title delimeter '%s'\n"
++		" b - Set bytes delimeter '%s'\n"
++		"     Example: command_1%s01%sf0%sB2%s32\n"
++		" q - Leave this menu\n"
++		"*****************************************\n";
++
++	if (!is_open) {
++		if ((input_file = fopen(file_path, "r"))) {
++			fprintf(stderr, "\nInput file found!");
++			is_open = TRUE;
++		}
++		else {
++			fprintf(stderr, "\nCannot open input file!");
++			ret = FALSE;
++		}
++	}
++
++	if (ret && is_open) {
++		fprintf(stderr, menu, delim_title, delim_byte, delim_title,
++				delim_byte, delim_byte, delim_byte);
++		if (file_line)
++			fprintf(stderr, "\r %s", file_line);
++	}
++
++	return ret;
++}
++
++
++void file_output_menu()
++{
++	char menu[] =
++		"\n*******Output File Menu*********\n"
++		" Port's input is printed to %s\n"
++		" f - Redirect to file\n"
++		" c - Redirect to console\n"
++		" Any other char to leave this menu\n"
++		"**********************************\n"
++		"Command: ";
++
++	fprintf(stderr, menu, (curr_state.output) ? "file" : "console");
++}
++
++/**
++ * \brief      File menu helper function; triggers the appropiate action selected by user.
++ * @param fd   The file descriptor of the port in use.
++ * @param c    The option selected by the user.
++ * @returns    FALSE - To indicate an error, invalid option, or exit from the file menu.
++ *             TRUE - When a valid option was successfully processed.
++ */
++int process_file_input(int fd, char c)
++{		
++	int ret = TRUE;
++	int release = FALSE;
++	int block_size = 0;
++	int size = 0;
++	int sent = 0;
++
++	if (delim_flag < 0) {
++		/* Trigger appropiate action for the selected option */
++		switch (c) {
++			/* Read the next line from file and print it */
++			case ' ':
++				if ((size = getline(&file_line, &block_size, input_file)) > 0) {
++					_clear_(100);
++					file_line[size-1] = ' ';
++					fprintf(stderr,"-> %s\r", file_line);
++				}
++				else {
++					fprintf(stderr,"\nNo more commands in the file, exiting...!");
++					release = TRUE;
++					ret = FALSE;
++				}
++				break;
++			/* Set the flag to customize the byte delimeter and ask for the character to use */
++			case 'b':
++				delim_flag = 0;
++				fprintf(stderr,"\nType in the delimeter character: ");
++				break;
++			/* Set the flag to customize the title delimeter and ask for the character to use */
++			case 't':
++				delim_flag = 1;
++				fprintf(stderr,"\nType in the delimeter character: ");
++				break;
++			case '\r':
++			case '\n':
++				if ((sent = send_command(fd, file_line)))
++					fprintf(stderr,"\nCommand sent! (%d bytes)", sent);
++				else
++					fprintf(stderr,"\nError sending command!");
++				break;
++			/* Exit from the file menu, clean up before exiting */
++			case 'q':
++				release = TRUE;
++				ret = FALSE;
++				break;
++			/* Pass the character through and exit from the file menu*/
++			default:
++				write(fd, &c, 1);
++				release = TRUE;
++				ret = FALSE;
++				break;
++		}
++
++		if (release) {
++			/* Release resources */
++			file_line = _free_(file_line);
++			if (input_file) {
++				fclose(input_file);
++				input_file = NULL;
++			}
++		}
++	}
++	else {
++		/* Update the selected delimeter and re-print the menu */
++		if (delim_flag)
++			delim_title[0] = c;
++		else delim_byte[0] = c;
++
++		delim_flag = -1;
++		file_input_menu(TRUE);
++	}
++
++	return ret;
++}
++
++void process_file_output(int fd, char c)
++{
++	switch (c) {
++		case 'f':
++			if (!curr_state.output) {
++				if ((output_file = fopen("./nanocom.log", "w"))) {
++					fprintf(stderr, "\nFile nanocom.log opened!");
++					curr_state.output = TRUE;
++				}
++				else {
++					fprintf(stderr, "\nCannot create output file!");
++					curr_state.output = FALSE;
++				}
++			}
++			break;
++		case 'c':
++			if (curr_state.output) {
++				if (output_file) {
++					fflush(output_file);
++					if (!fclose(output_file)) {
++						fprintf(stderr, "\nFile nanocom.log closed!");
++						output_file = NULL;
++						curr_state.output = FALSE;
++					}
++				}
++			}
++			break;
++	}
++}
++
++/**
++ * \brief       Parses the bytes from the string and sends the data to the port.
++ * @param fd    The file descriptor of the port in use.
++ * @param str   The pointer to the string.
++ * @returns     The number of bytes sent to the port.
++ */
++int process_data_mode(int fd, char *str)
++{
++	int ret = 0;
++	buffer data;
++	data.bytes = NULL;
++	data.size = 0;
++
++	if (str_to_bytes(str, delim_byte, &data))
++		ret = send_data(fd, &data, curr_state.protocol_mode);
++
++	_free_(data.bytes);
++
++	return ret;
++}
++
++/**
++ * \brief       Splits a string into title and data, and sends the data to the port.
++ * @param fd    The file descriptor of the port in use.
++ * @param str   The command to parse and send (split title and data).
++ * @returns     TRUE - When the command was successfully send.
++ *              FALSE - When an error was detected and the command failed to be sent.
++ */
++static int send_command(int fd, const char *str)
++{
++	int ret = FALSE;
++	char * backup = NULL;
++	command cmd;
++
++	if (NULL != str) {
++		if (strlen(str) > 3) {
++			backup = strdup(str);
++			cmd.title = strtok(backup, delim_title);
++			if (0 == strcmp(str, cmd.title))
++				cmd.bytes = backup;
++			else cmd.bytes = backup + strlen(cmd.title) + 1;
++
++			ret = process_data_mode(fd, cmd.bytes);
++			_free_(backup);
++		}
++	}
++
++	return ret;
++}
++
++/**
++ * \brief         Parse the bytes from a string and store them in a buffer.
++ * @param str     The string containing the bytes in hexadecimal format.
++ * @param delim   The delimeter character used to split the bytes from the string.
++ * @param data    The buffer to store the bytes into.
++ * @returns       The amount of bytes parsed from the string.
++ */
++static int str_to_bytes(char *str, char *delim, buffer *data)
++{
++	byte * tmp_buf;
++	char * token;
++	int tmp, count, ret;
++	ret = 0;
++
++	if (NULL != str && NULL != data) {
++		count = 0;
++		tmp_buf = NULL;
++
++		/* Create a temp buffer*/
++		if ((tmp_buf = (byte *)malloc(strlen(str) >> 1))) {
++			token = strtok(str, delim);
++			do {
++				/* Convert the token to a byte */
++				if ((tmp = to_byte(token)) >= 0) {
++					/* Store the byte into the temporary buffer */
++					tmp_buf[count] = (byte)tmp;
++					count++;
++					token = strtok(NULL, delim);
++				}
++			}
++			while (NULL != token && tmp >= 0);
++
++			/* Check if there were bytes parsed from the string */
++			if (count > 0) {
++				data->size = 0;
++				/* Allocate memory to store the exact number of bytes parsed */
++				if ((data->bytes = realloc(data->bytes, (size_t)count))) {
++					/* Copy bytes from temp buffer into the final buffer */
++					memcpy(data->bytes, tmp_buf, count);
++					data->size = count;
++				}
++				ret = data->size;
++			}
++			_free_(tmp_buf);
++		}
++	}
++
++	return ret;
++}
++
++/**
++ * /brief            Sends the data with our without a protocol container into the port.
++ * @param fd         The file descriptor of the serial port to use.
++ * @param data       The data to be sent to the port.
++ * @param protocol   Indicates if the data must be encapsulated into tserbin protocol before sending it.
++ * @returns          The number of bytes sent to the port.
++ */
++static int send_data(int fd, buffer *data, int protocol)
++{
++	int ret = 0;
++
++	if (NULL != data) {
++		if ((NULL != data->bytes) && (data->size > 0)) {
++			if (protocol) {
++				if (to_packet(data))
++					ret = write(fd, data->bytes, data->size);
++			}
++			else ret = write(fd, data->bytes, data->size);
++		}
++	}
++
++	return ret;
++}
++
++/**
++ * /brief       Encapsulates the bytes stored in the buffer into a tserbin protocol container.
++ * @param data  The buffer containing the bytes to encapsulate.
++ * @returns     TRUE - if the packet was created successfully.
++ *              FALSE - if an error was found and the packet is corrupted.
++ */
++static int to_packet(buffer *data)
++{
++	u_int checksum;
++	byte * tmp_buf;
++	int i, size, ret;
++	ret = FALSE;
++
++	if (NULL != data) {
++		if (NULL != data->bytes) {
++			size = data->size;
++			/* Allocate memory for the header and footer in the data buffer */
++			if ((tmp_buf = (byte *)malloc(size + 4))) {
++				/* Place payload bytes in the right place within the packet */
++				memcpy(tmp_buf + 3, data->bytes, size);
++
++				/* Create the packet header */
++				tmp_buf[0] = 0x16;               /* Delimiter byte */
++				tmp_buf[1] = (byte)size;         /* Payload size */
++				tmp_buf[2] = 255 - (byte)size;   /* 1's complement of payload size */
++
++				/* Create the packet footer */
++				checksum = 0;
++				for (i = 0; i < size; i++)
++					checksum += data->bytes[i];
++
++				/* The index of the last byte in the packet is size + 3 */
++				tmp_buf[size + 3] = 255 - (byte)(checksum & 0xFF);
++				_free_(data->bytes);
++				data->bytes = tmp_buf;
++				data->size = size + 4;
++				ret = TRUE;
++			}
++		}
++	}
++
++	return ret;
++}
++
++/**
++ * /brief      Converts a pair of ascii hexadecimal chars into a byte.
++ * @param str  The string containing the hexadecimal characters.
++ * @returns    The byte if the conversion was sucessful or -1 in case of errors.
++ */
++static int to_byte(const char *str)
++{
++	int digit, tmp, i, ret;
++	tmp = 0;
++	ret = -1;
++
++	if (strlen(str) >= 2) {
++		for (i=0; i<2; i++) {
++			/* Check if the character is a valid HEX digit (case-insensitive) */
++			digit = tolower((int)str[i]);
++			if ((digit > 47 && digit < 58) || (digit > 96 && digit < 103)) {
++				/* Convert the char into decimal */
++				digit -= 87;
++				if (digit < 0)
++					digit += 39;
++
++				if (i) {
++					tmp |= digit;
++					ret = tmp;
++				}
++				else {
++					tmp = (digit << 4);
++					ret = -1;
++				}
++			}
++		}
++	}
++
++	return ret;
++}
++
++/**
++ * /brief         Prints count number of white spaces.
++ * @param count   The amount of chars to print.
++ */
++void _clear_(int count)
++{
++	int i;
++	for (i=0; i < count; i++)
++		fputs(" ",stderr);
++
++	fputs("\r",stderr);
++}
++
++/**
++ * /brief       Generic function to free allocated resources.
++ * @param ptr   The pointer to the allocated memory.
++ */
++void* _free_(void* ptr)
++{
++	if (NULL != ptr)
++		free(ptr);
++
++	return NULL;
++}
++
+diff --git a/menu.c b/menu.c
+index ed7bd63..007ad52 100644
+--- a/menu.c
++++ b/menu.c
+@@ -48,7 +48,7 @@ static void parse_help_state(int fd,char buf);
+ static void reset_state(void);
+ 
+ char err[] = "\nInvalid option\n";
+- char leaving[]="\n\nLeaving menu\n\n";
++ char leaving[]="\n\nLeaving menu\nPress CTRL+T for menu options\n";
+ 
+ 
+ /******************************************************************
+@@ -64,7 +64,7 @@ menu is called by pressing ctrl+s, handled in cook_buf()
+ /*the main menu*/
+ void main_menu(void) {
+ 
+-   char str1[] = "**********Menu***********\n"
++   char str1[] = "\n**********Menu***********\n"
+     "1. Display Current Line Status\n"
+     "2. Set Bit Rate\n"
+     "3. Set Data Bits\n"
+@@ -74,7 +74,10 @@ void main_menu(void) {
+     "7. Set Echo Settings\n"
+     "8. Exit\n"
+     "9. Leave Menu\n"
+-    "*************************\n";   
++    "**********Extra***********\n"
++    "i. Input File\n"
++    "o. Output File\n"
++    "**************************\n";
+ 
+   write(STDOUT_FILENO, str1, strlen(str1)); 
+ }
+@@ -204,13 +207,22 @@ static void process_main_menu(int fd, char c) {
+         break;
+     /*quit the program*/
+     case '8':
++      process_file_output(fd, 'c');
+       /* restore termios settings and exit */
+       write(STDOUT_FILENO, "\n", 1);
+       cleanup_termios(0);
+       break;
+-  case '9': /* quit help */
++    case '9': /* quit help */
+       reset_state();
+       break;
++    case 'i':
++      if (!file_input_menu(FALSE))
++         reset_state();
++      break;
++    case 'o':
++      file_output_menu();
++      break;
++
+ 
+     
+   default:
+@@ -383,10 +395,18 @@ static void parse_help_state(int fd,char buf)
+                 process_flow_control_menu(fd,buf);
+                 reset_state();
+                 break;
+-           case 7:
++            case 7:
+                 process_echo_settings_menu(fd,buf);
+                 reset_state();
+                 break;
++            case 57:
++                if (!process_file_input(fd, buf))
++                   reset_state();
++                break;
++            case 63:
++                process_file_output(fd, buf);
++                reset_state();
++                break;
+             /*there is no need for case 8 as we'll have exited before getting to this menu*/
+             /*same goes for case 9*/
+            default: 
+diff --git a/mux.c b/mux.c
+index e21a7a3..60dd8a3 100644
+--- a/mux.c
++++ b/mux.c
+@@ -24,7 +24,7 @@
+ #define BUFSIZE 1024
+ 
+ extern char scr_name[];
+-
++extern FILE * output_file;
+ 
+ 
+ /* main program loop */
+@@ -34,21 +34,29 @@ void mux_loop(int pf) {
+   int done = 0;
+   char buf[BUFSIZE];
+   struct timeval tv;
+-  tv.tv_usec = 0;
++  int sent = 0;
++  tv.tv_sec = 0;
++  tv.tv_usec = 10;
+ 
+     do { /* loop forever */
+         FD_ZERO(&ready);
+         FD_SET(STDIN_FILENO, &ready);
+         FD_SET(pf, &ready);
+-    
+-        select(pf+1, &ready, NULL, NULL, NULL);
++
++        if (curr_state.data_mode)
++            select(pf+1, &ready, NULL, NULL, &tv);
++        else
++            select(pf+1, &ready, NULL, NULL, NULL);
+     
+         if (FD_ISSET(pf, &ready)) {
+             /* pf has characters for us */
+             i = read(pf, buf, BUFSIZE);
+             
+             if (i > 0) {
+-                write(STDOUT_FILENO, buf, i);
++                if (curr_state.output)
++                    fwrite(buf, sizeof(char), i, output_file);
++                else
++                    write(STDOUT_FILENO, buf, i);
+             }
+             else {
+                 done = 1;
+@@ -59,11 +67,19 @@ void mux_loop(int pf) {
+                 /* standard input has characters for us */
+                 i = read(STDIN_FILENO, buf, BUFSIZE);
+             if (i > 0) {
+-                cook_buf(pf, buf, i);
++                /* if data mode is enabled, send the bytes to the port and exit from this loop */
++                if (curr_state.data_mode) {
++                    if ((sent = process_data_mode(pf, buf)) > 0)
++                        fprintf(stderr,"\n%d bytes sent!\n", sent);
++                    else
++                        fprintf(stderr,"\nError sending bytes!\n");
++                    done = 1;
++                }
++                else
++                    cook_buf(pf, buf, i);
+             }
+-            else {
++            else if (curr_state.data_mode)
+                 done = 1;
+-            }
+         } /* if */
+     }  while (!done); /* do */
+ }
+diff --git a/nanocom.c b/nanocom.c
+index 522cb20..7722fde 100644
+--- a/nanocom.c
++++ b/nanocom.c
+@@ -23,7 +23,7 @@ Based upon microcom by Anca and Lucian Jurubita (C) Copyright 1999
+ int crnl_mapping; //0 - no mapping, 1 mapping
+ 
+ char device[MAX_DEVICE_NAME]; /* serial device name */
+-
++char * file_path = NULL; /* System path to the input file */
+ int  pf = 0;  /* port file descriptor */
+ struct termios pots; /* old port termios settings to restore */
+ struct termios sots; /* old stdout/in termios settings to restore */
+@@ -248,7 +248,14 @@ void usage(char *str) {
+             "\t-e Echo setting\n"
+             "\t\tl Local echo (echos everything you type, use if you don't see what you type)\n"
+             "\t\tr Remote echo (use if remote system doesn't see what is typed OR enable local echo on remote system)\n"
+-            "\t\tn No echoing.\n\n");         
++            "\t\tn No echoing.\n"
++            "\n\tExtra Features:\n"
++            "\t-O Output file. Redirect port's input to nanocom.log file instead of console.\n"
++            "\t-I Input file. Specify the path to an input file\n"
++            "\t-D Enables data mode, use it to send bytes directly to the port, without entering to the console.\n"
++            "\t\t Example of data mode: echo '0f,Ac,89,01' | nanocom <options> -D [-P]\n"
++            "\t-P Enables protocol mode, data is encapsulated by tserbin protocol prior sending it to the port.\n"
++            "\n");
+   exit(1);
+ }
+ 
+@@ -270,7 +277,6 @@ int main(int argc, char *argv[]) {
+     struct  termios pts;  /* termios settings on port */
+     struct  termios sts;  /* termios settings on stdout/in */
+     struct sigaction sact;/* used to initialize the signal handler */
+-    int i;
+     int opt;
+     
+     device[0] = '\0';
+@@ -283,8 +289,10 @@ int main(int argc, char *argv[]) {
+         
+     /*get current device attributes*/
+     tcgetattr(pf, &pts);      
+-        
+-    while ( (opt = getopt(argc,argv,"b:p:s:d:f:e:")) >0) {
++    curr_state.data_mode = FALSE;
++    curr_state.protocol_mode = FALSE;
++    curr_state.output = FALSE;
++    while ( (opt = getopt(argc,argv,"ODPb:p:s:d:f:e:I:")) >0) {
+         switch (opt)  {
+             /*set the baud rate*/
+             case 'b':
+@@ -315,6 +323,26 @@ int main(int argc, char *argv[]) {
+            case 'e':
+                curr_state.echo_type=optarg[0];
+                break;
++
++           /*output file*/
++           case 'O':
++               process_file_output(pf, 'f');
++               break;
++
++           /*input file*/
++           case 'I':
++               file_path = optarg;
++               break;
++
++           /*data mode*/
++           case 'D':
++               curr_state.data_mode = TRUE;
++               break;
++
++           /*protocol mode*/
++           case 'P':
++               curr_state.protocol_mode = TRUE;
++               break;
+                                        
+             default:
+                 usage("");
+@@ -328,11 +356,17 @@ int main(int argc, char *argv[]) {
+     
+     /*setup serial port with new settings*/
+     init_comm(&pts);
+-        
+-    fprintf(stderr,"Press CTRL+T for menu options");   
+-    display_state();
+-     
+-        
++
++    if (curr_state.data_mode)
++        fprintf(stderr, "\nData mode enabled! Trying to sent bytes to the port...\n");
++    else {
++        display_state();
++        fprintf(stderr,"Press CTRL+T for menu options\n");
++    }
++
++    if (curr_state.protocol_mode)
++        fprintf(stderr, "\nProtocol mode enabled! Output data will be encapsulated in a TSERBIN packet\n");
++
+     /* Now deal with the local terminal side */
+     tcgetattr(STDIN_FILENO, &sts);
+     memcpy(&sots, &sts, sizeof(sots)); /* to be used upon exit */
+@@ -352,4 +386,6 @@ int main(int argc, char *argv[]) {
+     
+     /*unreachable line ??*/
+     cleanup_termios(0);
++
++    return 0;
+ }
+diff --git a/nanocom.h b/nanocom.h
+index 164267f..d337dae 100644
+--- a/nanocom.h
++++ b/nanocom.h
+@@ -56,8 +56,13 @@ void cleanup_termios(int signal);
+ void init_stdin(struct termios *sts);
+ void init_comm();
+ void usage( char *str);
+-void display_status();
++void display_state();
+ 
++void file_output_menu(void);
++int file_input_menu(int is_open);
++int process_data_mode(int fd, char *str);
++int process_file_input(int fd, char c);
++void process_file_output(int fd, char c);
+ 
+ /*typedef to represent the current line state
+ 
+@@ -71,6 +76,9 @@ typedef struct {
+     byte stop_bits; /*1 or 2*/
+     char flow_control; /*h for hardware, s for software, n for none*/
+     char echo_type; /*r for remote, l for local and n for none*/
++    int data_mode; /*enables data mode, use it to send bytes directly to the port, without entering to a console.*/
++    int protocol_mode; /*enables protocol mode, data is encapsulated by tserbin protocol*/
++    int output; /*enables, disables writing incoming data to file instead of console*/
+ } state;
+ 
+ state curr_state;
+-- 
+1.7.9.5
+

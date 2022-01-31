@@ -1,0 +1,28 @@
+From 24c053915cad7903edb5d3036b1e732901985072 Mon Sep 17 00:00:00 2001
+From: kalyan majumder <kalyan.majumderi-ext@continental-corporation.com>
+Date: Thu, 3 Mar 2016 17:02:49 +0530
+Subject: [PATCH 15/15] Changes to delete references for services of
+ systemd-fsck-root.
+
+Ticket-Id:TP_Dpk#794
+Change-Id: I00df0e49fd86eda2e6a5434af98a36128d089ada
+---
+ units/systemd-remount-fs.service.in |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/units/systemd-remount-fs.service.in b/units/systemd-remount-fs.service.in
+index 70e1a86..1bf2a97 100644
+--- a/units/systemd-remount-fs.service.in
++++ b/units/systemd-remount-fs.service.in
+@@ -11,7 +11,7 @@ Documentation=man:systemd-remount-fs.service(8)
+ Documentation=http://www.freedesktop.org/wiki/Software/systemd/APIFileSystems
+ DefaultDependencies=no
+ Conflicts=shutdown.target
+-After=systemd-readahead-collect.service systemd-readahead-replay.service systemd-fsck-root.service
++After=systemd-readahead-collect.service systemd-readahead-replay.service
+ Before=local-fs-pre.target local-fs.target shutdown.target
+ Wants=local-fs-pre.target
+ ConditionPathExists=/etc/fstab
+-- 
+1.7.9.5
+

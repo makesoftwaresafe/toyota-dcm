@@ -1,0 +1,305 @@
+From ad7daefbf5d038766f581e586d24ac2ef6e4e847 Mon Sep 17 00:00:00 2001
+From: Alexey Knyshev <alexey.knyshev@gmail.com>
+Date: Thu, 2 May 2013 13:52:03 -0500
+Subject: [PATCH 2/2] mkfs.ubifs: add an --exclude (-z) arg
+
+Add an exclude option to exclude paths relative to the root
+Size of exclude_path array is define EXCL_SIZE_MAX
+
+Ticket-Id: BZ395
+Change-Id: I3a67f3826dff9c92cdefb5d64fab325fff965b90
+---
+ mkfs.ubifs/mkfs.ubifs.c |  174 +++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 154 insertions(+), 20 deletions(-)
+
+diff --git a/mkfs.ubifs/mkfs.ubifs.c b/mkfs.ubifs/mkfs.ubifs.c
+index bb25dc3..5541fc6 100644
+--- a/mkfs.ubifs/mkfs.ubifs.c
++++ b/mkfs.ubifs/mkfs.ubifs.c
+@@ -111,6 +111,12 @@ static int out_fd;
+ static int out_ubi;
+ static int squash_owner;
+ 
++/* Exclude PATHs */
++#define EXCL_SIZE_MAX 1024
++static char *exclude_paths[EXCL_SIZE_MAX];
++static size_t exclude_paths_size = 0;
++static char *exclude_args[EXCL_SIZE_MAX];
++
+ /* The 'head' (position) which nodes are written */
+ static int head_lnum;
+ static int head_offs;
+@@ -132,7 +138,7 @@ static struct inum_mapping **hash_table;
+ /* Inode creation sequence number */
+ static unsigned long long creat_sqnum;
+ 
+-static const char *optstring = "d:r:m:o:D:h?vVe:c:g:f:Fp:k:x:X:j:R:l:j:UQq";
++static const char *optstring = "d:r:m:o:D:h?vVe:c:g:f:Fp:k:x:X:j:R:l:j:UQqz:";
+ 
+ static const struct option longopts[] = {
+ 	{"root",               1, NULL, 'r'},
+@@ -154,7 +160,8 @@ static const struct option longopts[] = {
+ 	{"keyhash",            1, NULL, 'k'},
+ 	{"log-lebs",           1, NULL, 'l'},
+ 	{"orph-lebs",          1, NULL, 'p'},
+-	{"squash-uids" ,       0, NULL, 'U'},
++	{"squash-uids",        0, NULL, 'U'},
++	{"exclude",            1, NULL, 'z'},
+ 	{NULL, 0, NULL, 0}
+ };
+ 
+@@ -194,6 +201,7 @@ static const char *helptext =
+ "-V, --version            display version information\n"
+ "-g, --debug=LEVEL        display debug information (0 - none, 1 - statistics,\n"
+ "                         2 - files, 3 - more details)\n"
++"-z, --exclude=PATH       exclude PATH from output relative to the root\n"
+ "-h, --help               display this help text\n\n"
+ "Note, SIZE is specified in bytes, but it may also be specified in Kilobytes,\n"
+ "Megabytes, and Gigabytes if a KiB, MiB, or GiB suffix is used.\n\n"
+@@ -234,6 +242,54 @@ static char *make_path(const char *dir, const char *name)
+ 	return s;
+ }
+ 
++static char *add_separator(const char *path)
++{
++	const size_t origlen = strlen(path);
++	const size_t copylen = origlen + 2; /* strlen + sep + nullterm */
++	char *copy = (char *)malloc(copylen);
++	if (!copy)
++		return NULL;
++	memcpy(copy, path, origlen);
++	copy[copylen - 2] = '/';
++	copy[copylen - 1] = 0;
++
++	dbg_msg(2, "Adding separator %s", copy);
++
++	return copy;
++}
++
++static void add_exclude_arg(char *arg)
++{
++	if (exclude_paths_size >= EXCL_SIZE_MAX) {
++		err_msg("Warning! Maximum exclude path count reached!");
++		err_msg("All following paths will be ignored!");
++		return;
++	}
++	exclude_args[exclude_paths_size] = arg;
++	++exclude_paths_size;
++}
++
++/**
++ * copy_root - duplicate @path (optarg), returning an identical malloc'd
++ * @path and adds '/' at end if there was no.
++ * @path: path to copy
++ */
++static char *copy_root(const char *path)
++{
++	dbg_msg(2, "coping root %s", path);
++
++	size_t len = strlen(path);
++
++	/*
++	 * The further code expects '/' at the end of the root
++	 * UBIFS directory on the host. So we set flag add_sep
++	 * in copy_path.
++	 */
++	if (path[len - 1] != '/')
++		return add_separator(path);
++	return strdup(path);
++}
++
+ /**
+  * same_dir - determine if two file descriptors refer to the same directory.
+  * @fd1: file descriptor 1
+@@ -370,6 +426,69 @@ static long long add_space_overhead(long long size)
+         return size / divisor;
+ }
+ 
++static void cstrings_print(char **strings, size_t size)
++{
++	size_t i;
++	for (i = 0; i < size; ++i)
++		dbg_msg(2, "%s", strings[i]);
++}
++
++/**
++ * add root prefix to each of exclude_args and write result
++ * to exclude_paths
++ *
++ * if some path from exclude_args not valid it will not
++ * be added to exclude_paths
++ */
++static int add_prefixes(void)
++{
++	size_t path_index, dest_index, size = exclude_paths_size;
++	char *tmp = 0;
++
++	if (size > 0) {
++		dbg_msg(2, "Adding prefixes to %s", "...");
++		cstrings_print(exclude_args, size);
++	}
++
++	for (path_index = 0, dest_index = 0; path_index < size; ++path_index) {
++		tmp = make_path(root, exclude_args[path_index]);
++		if (tmp) {
++			exclude_paths[dest_index] = tmp;
++			++dest_index;
++		} else {
++			--exclude_paths_size;
++		}
++	}
++
++	if (size > 0) {
++		dbg_msg(2, "Prefixes added %s", "...");
++		cstrings_print(exclude_paths, exclude_paths_size);
++	}
++	return 0;
++}
++
++/**
++ * find @str in @strings array
++ */
++static size_t cstring_find(char **strings, size_t size, const char *str)
++{
++	size_t i;
++	for (i = 0; i < size; ++i) {
++		const int cmp = strcmp(str, strings[i]);
++		if (cmp == 0)
++			return i;
++	}
++	return -1;
++}
++
++/**
++ * is_excluded_path - find index of @path in @path_list (@size - size of @path_list)
++ */
++static int is_excluded_path(char **path_list, size_t size, const char *path)
++{
++	return (cstring_find(path_list, size, path) != -1);
++}
++
+ static int validate_options(void)
+ {
+ 	int tmp;
+@@ -525,26 +644,15 @@ static int get_options(int argc, char**argv)
+ 	c->max_bud_bytes = -1;
+ 	c->log_lebs = -1;
+ 
+-	while (1) {
+-		opt = getopt_long(argc, argv, optstring, longopts, &i);
+-		if (opt == -1)
+-			break;
++	while ( (opt = getopt_long(argc, argv, optstring, longopts, &i)) != -1 ) {
+ 		switch (opt) {
+ 		case 'r':
+ 		case 'd':
+-			root_len = strlen(optarg);
+-			root = malloc(root_len + 2);
++			dbg_msg(2, "parsing root %s", optarg);
++			root = copy_root(optarg);
+ 			if (!root)
+-				return err_msg("cannot allocate memory");
+-
+-			/*
+-			 * The further code expects '/' at the end of the root
+-			 * UBIFS directory on the host.
+-			 */
+-			memcpy(root, optarg, root_len);
+-			if (root[root_len - 1] != '/')
+-				root[root_len++] = '/';
+-			root[root_len] = 0;
++				return err_msg("out of memory");
++			root_len = strlen(root);
+ 
+ 			/* Make sure the root directory exists */
+ 			if (stat(root, &st))
+@@ -653,6 +761,11 @@ static int get_options(int argc, char**argv)
+ 		case 'U':
+ 			squash_owner = 1;
+ 			break;
++		case 'z':
++			add_exclude_arg(optarg);
++			break;
++		default:
++			break;
+ 		}
+ 	}
+ 
+@@ -740,9 +853,12 @@ static int get_options(int argc, char**argv)
+ 		printf("\torph_lebs:    %d\n", c->orph_lebs);
+ 		printf("\tspace_fixup:  %d\n", c->space_fixup);
+ 	}
++	/* Parse saved args and add prefix to each of 'em */
++	if (add_prefixes())
++		return err_msg("out of memory");
+ 
+ 	if (validate_options())
+-		return -1;
++		return err_msg("options validation failed");
+ 
+ 	if (tbl_file && parse_devtable(tbl_file))
+ 		return err_msg("cannot parse device table file '%s'", tbl_file);
+@@ -1205,7 +1321,7 @@ static int add_dent_node(ino_t dir_inum, const char *name, ino_t inum,
+ 
+ 	kname = strdup(name);
+ 	if (!kname)
+-		return err_msg("cannot allocate memory");
++		return err_msg("out of memory");
+ 
+ 	return add_node(&key, kname, dent, len);
+ }
+@@ -1502,12 +1618,18 @@ static int add_directory(const char *dir_name, ino_t dir_inum, struct stat *st,
+ 		 * for this file from the UBIFS rootfs on the host.
+ 		 */
+ 		free(name);
++		dbg_msg(2, "make_path(%s, %s)",dir_name, entry->d_name);
+ 		name = make_path(dir_name, entry->d_name);
+ 		if (lstat(name, &dent_st) == -1) {
+ 			sys_err_msg("lstat failed for file '%s'", name);
+ 			goto out_free;
+ 		}
+ 
++		if (is_excluded_path(exclude_paths, exclude_paths_size, name)) {
++			dbg_msg(2, "excluding %s", name);
++			continue;
++		}
++
+ 		if (squash_owner)
+ 			/*
+ 			 * Squash UID/GID. But the device table may override
+@@ -1667,6 +1789,9 @@ static int write_data(void)
+ 	return flush_nodes();
+ }
+ 
++/**
++ * name comparer for qsort func
++ */
+ static int namecmp(const char *name1, const char *name2)
+ {
+ 	size_t len1 = strlen(name1), len2 = strlen(name2);
+@@ -2257,6 +2382,14 @@ static void destroy_hash_table(void)
+ 	}
+ }
+ 
++static void destroy_exclude_paths(void)
++{
++	size_t i;
++
++	for (i = 0; i < exclude_paths_size; ++i)
++		free(exclude_paths[i]);
++}
++
+ /**
+  * deinit - deinitialize things.
+  */
+@@ -2271,6 +2404,7 @@ static void deinit(void)
+ 	free(hash_table);
+ 	destroy_compression();
+ 	free_devtable_info();
++	destroy_exclude_paths();
+ }
+ 
+ /**
+-- 
+1.7.9.5
+

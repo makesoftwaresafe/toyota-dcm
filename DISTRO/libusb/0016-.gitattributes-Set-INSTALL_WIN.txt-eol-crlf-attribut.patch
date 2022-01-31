@@ -1,0 +1,21 @@
+From 0845ff2aeed9ad009d246ecc2a945f007817ca9a Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Tue, 10 Jul 2012 06:29:48 +0200
+Subject: [PATCH 16/28] .gitattributes: Set INSTALL_WIN.txt eol=crlf attribute
+
+---
+ .gitattributes |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/.gitattributes b/.gitattributes
+index f2ee5d2..978ce24 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -8,3 +8,4 @@
+ *.vcxproj* eol=crlf
+ .gitattributes export-ignore
+ .gitignore export-ignore
++INSTALL_WIN.txt eol=crlf
+-- 
+1.7.9.5
+

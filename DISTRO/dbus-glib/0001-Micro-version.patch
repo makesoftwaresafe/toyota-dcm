@@ -1,0 +1,25 @@
+From dfdb0de78563a01c3d722e1de83d85e90163feaa Mon Sep 17 00:00:00 2001
+From: Simon McVittie <simon.mcvittie@collabora.co.uk>
+Date: Fri, 30 Sep 2011 16:12:29 +0100
+Subject: [PATCH] Micro version
+
+---
+ configure.ac |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 4624e02..c9b2863 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1,7 +1,7 @@
+ dnl -*- mode: m4 -*-
+ AC_PREREQ(2.52)
+ 
+-AC_INIT([dbus-glib], [0.98],
++AC_INIT([dbus-glib], [0.99],
+   [https://bugs.freedesktop.org/enter_bug.cgi?product=dbus])
+ 
+ AC_CANONICAL_HOST
+-- 
+1.7.9.5
+

@@ -1,0 +1,137 @@
+From dff8d0f726cecc2cc9265bc7148333bcf6d8ac0c Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Mon, 9 May 2011 12:14:59 +0300
+Subject: [PATCH 23/32] various: handle return values of write calls
+
+---
+ nanohttp.c |   18 ++++++++++++------
+ testC14N.c |    6 ++++--
+ xmllint.c  |   16 ++++++++++++----
+ 3 files changed, 28 insertions(+), 12 deletions(-)
+
+diff --git a/nanohttp.c b/nanohttp.c
+index f669457..a8af0e1 100644
+--- a/nanohttp.c
++++ b/nanohttp.c
+@@ -1615,7 +1615,8 @@ xmlNanoHTTPFetch(const char *URL, const char *filename, char **contentType) {
+     char *buf = NULL;
+     int fd;
+     int len;
+-    
++    int ret = 0;
++
+     if (filename == NULL) return(-1);
+     ctxt = xmlNanoHTTPOpen(URL, contentType);
+     if (ctxt == NULL) return(-1);
+@@ -1636,12 +1637,14 @@ xmlNanoHTTPFetch(const char *URL, const char *filename, char **contentType) {
+ 
+     xmlNanoHTTPFetchContent( ctxt, &buf, &len );
+     if ( len > 0 ) {
+-	write(fd, buf, len);
++	if (write(fd, buf, len) == -1) {
++	    ret = -1;
++	}
+     }
+ 
+     xmlNanoHTTPClose(ctxt);
+     close(fd);
+-    return(0);
++    return(ret);
+ }
+ 
+ #ifdef LIBXML_OUTPUT_ENABLED
+@@ -1660,7 +1663,8 @@ xmlNanoHTTPSave(void *ctxt, const char *filename) {
+     char *buf = NULL;
+     int fd;
+     int len;
+-    
++    int ret = 0;
++
+     if ((ctxt == NULL) || (filename == NULL)) return(-1);
+ 
+     if (!strcmp(filename, "-")) 
+@@ -1675,12 +1679,14 @@ xmlNanoHTTPSave(void *ctxt, const char *filename) {
+ 
+     xmlNanoHTTPFetchContent( ctxt, &buf, &len );
+     if ( len > 0 ) {
+-	write(fd, buf, len);
++	if (write(fd, buf, len) == -1) {
++	    ret = -1;
++	}
+     }
+ 
+     xmlNanoHTTPClose(ctxt);
+     close(fd);
+-    return(0);
++    return(ret);
+ }
+ #endif /* LIBXML_OUTPUT_ENABLED */
+ 
+diff --git a/testC14N.c b/testC14N.c
+index fbfa869..dc1a9a6 100644
+--- a/testC14N.c
++++ b/testC14N.c
+@@ -104,8 +104,10 @@ test_c14n(const char* xml_filename, int with_comments, int mode,
+ 	    with_comments, &result);
+     if(ret >= 0) {
+ 	if(result != NULL) {
+-	    write(1, result, ret);
+-	    xmlFree(result);          
++	    if (write(STDOUT_FILENO, result, ret) == -1) {
++		fprintf(stderr, "Can't write data\n");
++	    }
++	    xmlFree(result);
+ 	}
+     } else {
+ 	fprintf(stderr,"Error: failed to canonicalize XML file \"%s\" (ret=%d)\n", xml_filename, ret);
+diff --git a/xmllint.c b/xmllint.c
+index b7af32f..8af56cd 100644
+--- a/xmllint.c
++++ b/xmllint.c
+@@ -2550,7 +2550,9 @@ static void parseAndPrintFile(char *filename, xmlParserCtxtPtr rectxt) {
+ 
+ 		size = xmlC14NDocDumpMemory(doc, NULL, XML_C14N_1_0, NULL, 1, &result);
+ 		if (size >= 0) {
+-		    write(1, result, size);
++		    if (write(1, result, size) == -1) {
++		        fprintf(stderr, "Can't write data\n");
++		    }
+ 		    xmlFree(result);
+ 		} else {
+ 		    fprintf(stderr, "Failed to canonicalize\n");
+@@ -2562,7 +2564,9 @@ static void parseAndPrintFile(char *filename, xmlParserCtxtPtr rectxt) {
+ 
+ 		size = xmlC14NDocDumpMemory(doc, NULL, XML_C14N_1_1, NULL, 1, &result);
+ 		if (size >= 0) {
+-		    write(1, result, size);
++		    if (write(1, result, size) == -1) {
++		        fprintf(stderr, "Can't write data\n");
++		    }
+ 		    xmlFree(result);
+ 		} else {
+ 		    fprintf(stderr, "Failed to canonicalize\n");
+@@ -2575,7 +2579,9 @@ static void parseAndPrintFile(char *filename, xmlParserCtxtPtr rectxt) {
+ 
+ 		size = xmlC14NDocDumpMemory(doc, NULL, XML_C14N_EXCLUSIVE_1_0, NULL, 1, &result);
+ 		if (size >= 0) {
+-		    write(1, result, size);
++		    if (write(1, result, size) == -1) {
++		        fprintf(stderr, "Can't write data\n");
++		    }
+ 		    xmlFree(result);
+ 		} else {
+ 		    fprintf(stderr, "Failed to canonicalize\n");
+@@ -2604,7 +2610,9 @@ static void parseAndPrintFile(char *filename, xmlParserCtxtPtr rectxt) {
+ 		    fprintf(stderr, "Failed to save\n");
+ 		    progresult = XMLLINT_ERR_OUT;
+ 		} else {
+-		    write(1, result, len);
++		    if (write(1, result, len) == -1) {
++		        fprintf(stderr, "Can't write data\n");
++		    }
+ 		    xmlFree(result);
+ 		}
+ 
+-- 
+1.7.9.5
+

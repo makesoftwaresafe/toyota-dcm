@@ -1,0 +1,63 @@
+From dde64081f9440b898cd856fad99bd8b7ede6b39a Mon Sep 17 00:00:00 2001
+From: Daniel Veillard <veillard@redhat.com>
+Date: Wed, 23 Mar 2011 08:12:26 +0800
+Subject: [PATCH 14/32] Improve documentation a bit
+
+---
+ doc/Makefile.am    |    2 +-
+ doc/downloads.html |    5 +++--
+ doc/xml.html       |    5 +++--
+ 3 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index cf1ee7c..dd39f69 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -45,7 +45,7 @@ web: $(PAGES)
+ 	    cp elfgcchack.h ../elfgcchack.h; \
+ 	  fi ; rm -f elfgcchack.h ;  fi );
+ 
+-$(PAGES): xml.html site.xsl
++$(PAGES): xml.html $(srcdir)/site.xsl
+ 	-@(if [ -x $(XSLTPROC) ] ; then \
+ 	  echo "Rebuilding the HTML Web pages from xml.html" ; \
+ 	  $(XSLTPROC) --nonet --html $(top_srcdir)/doc/site.xsl $(top_srcdir)/doc/xml.html > index.html ; fi );
+diff --git a/doc/downloads.html b/doc/downloads.html
+index 51a7bc8..f3ba4d0 100644
+--- a/doc/downloads.html
++++ b/doc/downloads.html
+@@ -28,9 +28,10 @@ Windows binaries made by Igor Zlatovic are available in the <a href="http://xmls
+   <li>Docs, content of the web site, the list archive included <a href="ftp://xmlsoft.org/libxml2/libxml-docs.tar.gz">libxml-docs.tar.gz</a>.</li>
+ </ul><p><a name="Contribs" id="Contribs">Contributions:</a></p><p>I do accept external contributions, especially if compiling on another
+ platform,  get in touch with the list to upload the package, wrappers for
+-various languages have been provided, and can be found in the <a href="python.html">bindings section</a></p><p>Libxml2 is also available from GIT:</p><ul><li><p>See <a href="http://git.gnome.org/cgit/libxml2/">libxml2 Git web</a>.
++various languages have been provided, and can be found in the <a href="python.html">bindings section</a></p><p>Libxml2 is also available from GIT:</p><ul><li><p>See <a href="http://git.gnome.org/browse/libxml2/">libxml2 Git web</a>.
+          To checkout a local tree use:</p>
+        <pre>git clone git://git.gnome.org/libxml2</pre>
+   </li>
+-  <li>The <strong>libxslt</strong> module is also present there</li>
++  <li>The <strong>libxslt</strong> module is also present 
++      <a href="http://git.gnome.org/browse/libxslt/">there</a>.</li>
+ </ul><p><a href="bugs.html">Daniel Veillard</a></p></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></body></html>
+diff --git a/doc/xml.html b/doc/xml.html
+index d828ba9..7f138d3 100644
+--- a/doc/xml.html
++++ b/doc/xml.html
+@@ -694,11 +694,12 @@ href="python.html">bindings section</a></p>
+ 
+ <p>Libxml2 is also available from GIT:</p>
+ <ul>
+-  <li><p>See <a href="http://git.gnome.org/cgit/libxml2/">libxml2 Git web</a>.
++  <li><p>See <a href="http://git.gnome.org/browse/libxml2/">libxml2 Git web</a>.
+          To checkout a local tree use:</p>
+        <pre>git clone git://git.gnome.org/libxml2</pre>
+   </li>
+-  <li>The <strong>libxslt</strong> module is also present there</li>
++  <li>The <strong>libxslt</strong> module is also present 
++      <a href="http://git.gnome.org/browse/libxslt/">there</a>.</li>
+ </ul>
+ 
+ <h2><a name="News">Releases</a></h2>
+-- 
+1.7.9.5
+

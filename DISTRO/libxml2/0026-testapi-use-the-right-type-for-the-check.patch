@@ -1,0 +1,37 @@
+From 0329a1471ee1c2ab4f4b46a2adae37dc52739257 Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Mon, 9 May 2011 15:11:45 +0300
+Subject: [PATCH 26/32] testapi: use the right type for the check
+
+Fixes a compiler warning. Also wrap the long line if statement.
+---
+ testapi.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/testapi.c b/testapi.c
+index df14820..17fff44 100644
+--- a/testapi.c
++++ b/testapi.c
+@@ -599,7 +599,7 @@ static void des_xmlTextReaderPtr(int no ATTRIBUTE_UNUSED, xmlTextReaderPtr val,
+ #endif
+ 
+ #define gen_nb_xmlBufferPtr 3
+-static const char *static_buf_content = "a static buffer";
++static const xmlChar *static_buf_content = (xmlChar *)"a static buffer";
+ static xmlBufferPtr gen_xmlBufferPtr(int no, int nr ATTRIBUTE_UNUSED) {
+     if (no == 0) return(xmlBufferCreate());
+     if (no == 1) return(xmlBufferCreateStatic((void *)static_buf_content, 13));
+@@ -18770,7 +18770,9 @@ test_xmlBufferSetAllocationScheme(void) {
+         scheme = gen_xmlBufferAllocationScheme(n_scheme, 1);
+ 
+         xmlBufferSetAllocationScheme(buf, scheme);
+-        if ((buf != NULL) && (scheme == XML_BUFFER_ALLOC_IMMUTABLE) && (buf->content != NULL) && (buf->content != static_buf_content)) { xmlFree(buf->content); buf->content = NULL;}
++        if ((buf != NULL) && (scheme == XML_BUFFER_ALLOC_IMMUTABLE) && (buf->content != NULL) && (buf->content != static_buf_content)) {
++            xmlFree(buf->content); buf->content = NULL;
++        }
+         call_tests++;
+         des_xmlBufferPtr(n_buf, buf, 0);
+         des_xmlBufferAllocationScheme(n_scheme, scheme, 1);
+-- 
+1.7.9.5
+

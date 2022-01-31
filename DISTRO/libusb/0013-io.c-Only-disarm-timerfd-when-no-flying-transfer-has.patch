@@ -1,0 +1,50 @@
+From 1bd831c4e88857bff2f1670c89eda1d04da1cc54 Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Tue, 10 Jul 2012 01:46:38 +0200
+Subject: [PATCH 13/28] io.c: Only disarm timerfd when no flying transfer has
+ a timeout
+
+Commit 4630fc22cff8ad3e1afa9b223378c0aabe282b5c made libusb work
+correctly when built to use timerfd but run on a kernel without
+timerfd support. The commit unfortunately also broke the logic
+during transfer completion which decides if the timerfd will be
+disarmed or not, and disarm_timerfd() was called even if the
+timerfd had already been armed with the next flying transfer
+timeout.
+
+Before the offending commit the timerfd would be disarmed only
+when arm_timerfd_for_next_timeout() reported that there was no
+flying transfer with a timeout. Let's restore that behavior.
+
+The bug was spotted through code review both by the author and
+by Hans de Goede, but was not squashed until Vincent Pellier
+experienced transfers never timing out, and helped confirm
+the source of the problem. Many thanks!
+
+References #73.
+---
+ libusb/io.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/libusb/io.c b/libusb/io.c
+index 7a3cf73..ac62e79 100644
+--- a/libusb/io.c
++++ b/libusb/io.c
+@@ -1464,9 +1464,11 @@ int usbi_handle_transfer_completion(struct usbi_transfer *itransfer,
+ 	if (usbi_using_timerfd(ctx)) {
+ 		if (r < 0)
+ 			return r;
+-		r = disarm_timerfd(ctx);
+-		if (r < 0)
+-			return r;
++		else if (0 == r) {
++			r = disarm_timerfd(ctx);
++			if (r < 0)
++				return r;
++		}
+ 	}
+ 
+ 	if (status == LIBUSB_TRANSFER_COMPLETED
+-- 
+1.7.9.5
+

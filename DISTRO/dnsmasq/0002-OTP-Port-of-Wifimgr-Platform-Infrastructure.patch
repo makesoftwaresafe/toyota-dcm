@@ -1,0 +1,189 @@
+From 9d7db43539af1de31c3d88b9a6b0b4c17a1c49de Mon Sep 17 00:00:00 2001
+From: Richard Gee <Richard.Gee-EXT@continental-corporation.com>
+Date: Fri, 24 Apr 2015 21:01:09 -0400
+Subject: [PATCH 2/4] OTP Port of Wifimgr - Platform/Infrastructure
+
+Ticket-Id: TP_Dpk#1102
+Change-Id: I3b97c7f06df2eee29d866cfad96475b065b4ff35
+---
+ src/config.h |   52 +++++++++++++++++++++++++---------------------------
+ 1 file changed, 25 insertions(+), 27 deletions(-)
+
+diff --git a/src/config.h b/src/config.h
+index 1a08e95..e2e078b 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -4,12 +4,12 @@
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; version 2 dated June, 1991, or
+    (at your option) version 3 dated 29 June, 2007.
+- 
++
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+-     
++
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+@@ -52,9 +52,9 @@ HAVE_BROKEN_RTC
+    for timing, and keep lease lengths rather than expiry times
+    in its leases file. This also make dnsmasq "flash disk friendly".
+    Normally, dnsmasq tries very hard to keep the on-disk leases file
+-   up-to-date: rewriting it after every renewal.  When HAVE_BROKEN_RTC 
+-   is in effect, the lease file is only written when a new lease is 
+-   created, or an old one destroyed. (Because those are the only times 
++   up-to-date: rewriting it after every renewal.  When HAVE_BROKEN_RTC
++   is in effect, the lease file is only written when a new lease is
++   created, or an old one destroyed. (Because those are the only times
+    it changes.) This vastly reduces the number of file writes, and makes
+    it viable to keep the lease file on a flash filesystem.
+    NOTE: when enabling or disabling this, be sure to delete any old
+@@ -73,17 +73,17 @@ HAVE_SCRIPT
+    define this to get the ability to call scripts on lease-change.
+ 
+ HAVE_LUASCRIPT
+-   define this to get the ability to call Lua script on lease-change. (implies HAVE_SCRIPT) 
++   define this to get the ability to call Lua script on lease-change. (implies HAVE_SCRIPT)
+ 
+ HAVE_DBUS
+    define this if you want to link against libdbus, and have dnsmasq
+-   support some methods to allow (re)configuration of the upstream DNS 
++   support some methods to allow (re)configuration of the upstream DNS
+    servers via DBus.
+ 
+ HAVE_IDN
+    define this if you want international domain name support.
+-   NOTE: for backwards compatibility, IDN support is automatically 
+-         included when internationalisation support is built, using the 
++   NOTE: for backwards compatibility, IDN support is automatically
++         included when internationalisation support is built, using the
+ 	 *-i18n makefile targets, even if HAVE_IDN is not explicitly set.
+ 
+ HAVE_CONNTRACK
+@@ -98,15 +98,15 @@ NO_DHCP
+ NO_DHCP6
+ NO_SCRIPT
+ NO_LARGEFILE
+-   these are avilable to explictly disable compile time options which would 
+-   otherwise be enabled automatically (HAVE_IPV6, >2Gb file sizes) or 
++   these are avilable to explictly disable compile time options which would
++   otherwise be enabled automatically (HAVE_IPV6, >2Gb file sizes) or
+    which are enabled  by default in the distributed source tree. Building dnsmasq
+    with something like "make COPTS=-DNO_SCRIPT" will do the trick.
+ 
+ LEASEFILE
+ CONFFILE
+ RESOLVFILE
+-   the default locations of these files are determined below, but may be overridden 
++   the default locations of these files are determined below, but may be overridden
+    in a build command line using COPTS.
+ 
+ */
+@@ -116,9 +116,10 @@ RESOLVFILE
+    has no library dependencies other than libc */
+ 
+ #define HAVE_DHCP
+-#define HAVE_DHCP6 
++#define HAVE_DHCP6
+ #define HAVE_TFTP
+ #define HAVE_SCRIPT
++#define HAVE_DBUS
+ /* #define HAVE_LUASCRIPT */
+ /* #define HAVE_BROKEN_RTC */
+ /* #define HAVE_DBUS */
+@@ -173,14 +174,14 @@ HAVE_SOLARIS_NETWORK
+    define exactly one of these to alter interaction with kernel networking.
+ 
+ HAVE_GETOPT_LONG
+-   defined when GNU-style getopt_long available. 
++   defined when GNU-style getopt_long available.
+ 
+ HAVE_ARC4RANDOM
+    defined if arc4random() available to get better security from DNS spoofs
+-   by using really random ids (OpenBSD) 
++   by using really random ids (OpenBSD)
+ 
+ HAVE_SOCKADDR_SA_LEN
+-   defined if struct sockaddr has sa_len field (*BSD) 
++   defined if struct sockaddr has sa_len field (*BSD)
+ */
+ 
+ /* Must preceed __linux__ since uClinux defines __linux__ too. */
+@@ -190,7 +191,7 @@ HAVE_SOCKADDR_SA_LEN
+ #undef HAVE_ARC4RANDOM
+ #undef HAVE_SOCKADDR_SA_LEN
+ /* Never use fork() on uClinux. Note that this is subtly different from the
+-   --keep-in-foreground option, since it also  suppresses forking new 
++   --keep-in-foreground option, since it also  suppresses forking new
+    processes for TCP connections and disables the call-a-script on leasechange
+    system. It's intended for use on MMU-less kernels. */
+ #define NO_FORK
+@@ -240,7 +241,7 @@ HAVE_SOCKADDR_SA_LEN
+ #define HAVE_SOCKADDR_SA_LEN
+ /* Define before sys/socket.h is included so we get socklen_t */
+ #define _BSD_SOCKLEN_T_
+- 
++
+ #elif defined(__NetBSD__)
+ #define HAVE_BSD_NETWORK
+ #define HAVE_GETOPT_LONG
+@@ -252,8 +253,8 @@ HAVE_SOCKADDR_SA_LEN
+ #define HAVE_GETOPT_LONG
+ #undef HAVE_ARC4RANDOM
+ #undef HAVE_SOCKADDR_SA_LEN
+-#define ETHER_ADDR_LEN 6 
+- 
++#define ETHER_ADDR_LEN 6
++
+ #endif
+ 
+ /* Decide if we're going to support IPv6 */
+@@ -272,7 +273,7 @@ HAVE_SOCKADDR_SA_LEN
+ #endif
+ 
+ 
+-/* rules to implement compile-time option dependencies and 
++/* rules to implement compile-time option dependencies and
+    the NO_XXX flags */
+ 
+ #ifdef NO_IPV6
+@@ -313,7 +314,7 @@ HAVE_SOCKADDR_SA_LEN
+ 
+ #ifdef DNSMASQ_COMPILE_OPTS
+ 
+-static char *compile_opts = 
++static char *compile_opts =
+ #ifndef HAVE_IPV6
+ "no-"
+ #endif
+@@ -338,7 +339,7 @@ static char *compile_opts =
+ "i18n "
+ #if !defined(LOCALEDIR) && !defined(HAVE_IDN)
+ "no-"
+-#endif 
++#endif
+ "IDN "
+ #ifndef HAVE_DHCP
+ "no-"
+@@ -347,7 +348,7 @@ static char *compile_opts =
+ #if defined(HAVE_DHCP)
+ #  if !defined (HAVE_DHCP6)
+      "no-"
+-#  endif  
++#  endif
+      "DHCPv6 "
+ #  if !defined(HAVE_SCRIPT)
+      "no-scripts "
+@@ -368,6 +369,3 @@ static char *compile_opts =
+ "conntrack";
+ 
+ #endif
+-
+-
+-
+-- 
+1.7.9.5
+

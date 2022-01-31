@@ -1,0 +1,49 @@
+From 325a8416697cf69b9b926ed68720f12b1aedf940 Mon Sep 17 00:00:00 2001
+From: Uri Lublin <uril@redhat.com>
+Date: Tue, 1 May 2012 16:47:34 +0300
+Subject: [PATCH 02/28] Windows: Make new transfers correctly notify the event
+ handling thread
+
+usbi_fd_notification() calls are added back into submit_*_transfer()
+so that the event handling thread will be aware of new transfers.
+
+libusb.git commit 6506013c6d4face34cfec79dd0584e9f528cbc6a from
+libusbx.git commit 4cccbed825fe1dc138121640a6497d7d05aac159 removed
+these calls during the removal of the DYNAMIC_FDS Windows-specific
+
+[stuge: Rewrite commit message]
+---
+ libusb/os/windows_usb.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/libusb/os/windows_usb.c b/libusb/os/windows_usb.c
+index 0739c19..6ceaec2 100644
+--- a/libusb/os/windows_usb.c
++++ b/libusb/os/windows_usb.c
+@@ -1768,6 +1768,7 @@ static int submit_bulk_transfer(struct usbi_transfer *itransfer)
+ 	usbi_add_pollfd(ctx, transfer_priv->pollable_fd.fd,
+ 		(short)(IS_XFERIN(transfer) ? POLLIN : POLLOUT));
+ 
++	usbi_fd_notification(ctx);
+ 	return LIBUSB_SUCCESS;
+ }
+ 
+@@ -1787,6 +1788,7 @@ static int submit_iso_transfer(struct usbi_transfer *itransfer)
+ 	usbi_add_pollfd(ctx, transfer_priv->pollable_fd.fd,
+ 		(short)(IS_XFERIN(transfer) ? POLLIN : POLLOUT));
+ 
++	usbi_fd_notification(ctx);
+ 	return LIBUSB_SUCCESS;
+ }
+ 
+@@ -1805,6 +1807,7 @@ static int submit_control_transfer(struct usbi_transfer *itransfer)
+ 
+ 	usbi_add_pollfd(ctx, transfer_priv->pollable_fd.fd, POLLIN);
+ 
++	usbi_fd_notification(ctx);
+ 	return LIBUSB_SUCCESS;
+ 
+ }
+-- 
+1.7.9.5
+

@@ -1,0 +1,30 @@
+From c2eee0109c907ace126cb13531c29211aca73d33 Mon Sep 17 00:00:00 2001
+From: Alan Garcia <alan.garcia@continental-corporation.com>
+Date: Wed, 11 Dec 2013 17:07:02 -0600
+Subject: [PATCH 09/15] Change systemd rate and burst limits values
+
+The number of times that a process can be restarted in a period of time
+and the period of time in which that process can be restarted were changed
+to ensure that a process is always available.
+
+Ticket-id: BZ594
+---
+ src/core/service.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/service.c b/src/core/service.c
+index b98f11a..1172b54 100644
+--- a/src/core/service.c
++++ b/src/core/service.c
+@@ -143,7 +143,7 @@ static void service_init(Unit *u) {
+         kill_context_init(&s->kill_context);
+         cgroup_context_init(&s->cgroup_context);
+ 
+-        RATELIMIT_INIT(s->start_limit, 10*USEC_PER_SEC, 5);
++        RATELIMIT_INIT(s->start_limit, 2*USEC_PER_SEC, 10);
+ 
+         s->control_command_id = _SERVICE_EXEC_COMMAND_INVALID;
+ }
+-- 
+1.7.9.5
+

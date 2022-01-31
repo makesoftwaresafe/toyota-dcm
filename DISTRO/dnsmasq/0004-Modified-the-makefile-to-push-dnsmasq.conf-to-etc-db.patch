@@ -1,0 +1,47 @@
+From d6f5b15fd588d4d26e663a5684326a0e10b5241d Mon Sep 17 00:00:00 2001
+From: Saikat bakshi <saikat.bakshi-ext@continental-corporation.com>
+Date: Wed, 11 May 2016 06:42:31 -0400
+Subject: [PATCH 4/4] Modified the makefile to push dnsmasq.conf to
+ /etc/dbus-1/system.d
+
+Ticket-Id: Toy_Dpk#996
+Change-Id: Ieb56350b6676a7ea2329e4dc5114f8d10d607943
+---
+ Makefile |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index d524924..9dc8252 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,6 +23,7 @@ BINDIR        = $(PREFIX)/sbin
+ MANDIR        = $(PREFIX)/share/man
+ LOCALEDIR     = $(PREFIX)/share/locale
+ BUILDDIR      = $(SRC)
++DBUSDIR       = $(DBUS)
+ DESTDIR       = 
+ CFLAGS        = -Wall -W -O2
+ LDFLAGS       = 
+@@ -41,6 +42,7 @@ MSGFMT     = msgfmt
+ XGETTEXT   = xgettext
+ 
+ SRC = src
++DBUS = dbus
+ PO  = po
+ MAN = man
+ 
+@@ -85,9 +87,10 @@ clean :
+ install : all install-common
+ 
+ install-common :
+-	$(INSTALL) -d $(DESTDIR)$(BINDIR) -d $(DESTDIR)$(MANDIR)/man8
++	$(INSTALL) -d $(DESTDIR)$(BINDIR) -d $(DESTDIR)$(MANDIR)/man8 -d $(DESTDIR)/etc/dbus-1/system.d
+ 	$(INSTALL) -m 644 $(MAN)/dnsmasq.8 $(DESTDIR)$(MANDIR)/man8 
+ 	$(INSTALL) -m 755 $(BUILDDIR)/dnsmasq $(DESTDIR)$(BINDIR)
++	$(INSTALL) -m 644 $(DBUSDIR)/dnsmasq.conf $(DESTDIR)/etc/dbus-1/system.d
+ 
+ all-i18n : $(BUILDDIR)
+ 	@cd $(BUILDDIR) && $(MAKE) \
+-- 
+1.7.9.5
+

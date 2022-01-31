@@ -1,0 +1,61 @@
+From 62f9a648cf8a875f7572697321f4059b40ef357c Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Tue, 23 Oct 2012 09:37:47 +0200
+Subject: [PATCH 26/28] configure.ac: Move THREAD_CFLAGS into AM_CFLAGS
+
+---
+ configure.ac         |    3 +--
+ examples/Makefile.am |    2 +-
+ libusb/Makefile.am   |    2 +-
+ 3 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index e662353..3f252bb 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -114,7 +114,6 @@ windows)
+ 	AC_DEFINE([POLL_NFDS_TYPE],[unsigned int],[type of second poll() argument])
+ 	;;
+ esac
+-AC_SUBST(THREAD_CFLAGS)
+ AC_SUBST(LIBS)
+ 
+ AM_CONDITIONAL(OS_LINUX, test "x$backend" = xlinux)
+@@ -206,7 +205,7 @@ AM_CONDITIONAL([HAVE_SIGACTION], [test "x$have_sigaction" = "xyes"])
+ AC_CHECK_HEADERS([sys/time.h])
+ AC_CHECK_FUNCS(gettimeofday)
+ 
+-AM_CFLAGS="-std=gnu99 -Wall -Wundef -Wunused -Wstrict-prototypes -Werror-implicit-function-declaration $nopointersign_cflags -Wshadow"
++AM_CFLAGS="-std=gnu99 -Wall -Wundef -Wunused -Wstrict-prototypes -Werror-implicit-function-declaration $nopointersign_cflags -Wshadow ${THREAD_CFLAGS}"
+ 
+ AC_SUBST(VISIBILITY_CFLAGS)
+ AC_SUBST(AM_CFLAGS)
+diff --git a/examples/Makefile.am b/examples/Makefile.am
+index 4545ed4..b100971 100644
+--- a/examples/Makefile.am
++++ b/examples/Makefile.am
+@@ -6,7 +6,7 @@ if HAVE_SIGACTION
+ noinst_PROGRAMS += dpfp
+ 
+ if THREADS_POSIX
+-dpfp_threaded_CFLAGS = $(THREAD_CFLAGS) $(AM_CFLAGS)
++dpfp_threaded_CFLAGS = $(AM_CFLAGS)
+ noinst_PROGRAMS += dpfp_threaded
+ endif
+ 
+diff --git a/libusb/Makefile.am b/libusb/Makefile.am
+index 3316ebc..12ada88 100644
+--- a/libusb/Makefile.am
++++ b/libusb/Makefile.am
+@@ -37,7 +37,7 @@ else
+ THREADS_SRC = os/threads_windows.h os/threads_windows.c
+ endif
+ 
+-libusb_1_0_la_CFLAGS = $(VISIBILITY_CFLAGS) $(AM_CFLAGS) $(THREAD_CFLAGS) \
++libusb_1_0_la_CFLAGS = $(VISIBILITY_CFLAGS) $(AM_CFLAGS) \
+ 	-DLIBUSB_DESCRIBE=\"`git --git-dir "$(top_srcdir)/.git" describe --tags 2>/dev/null`\"
+ libusb_1_0_la_LDFLAGS = $(LTLDFLAGS)
+ libusb_1_0_la_SOURCES = libusbi.h core.c descriptor.c io.c sync.c $(OS_SRC) \
+-- 
+1.7.9.5
+

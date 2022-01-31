@@ -1,0 +1,29 @@
+From 364e3d2b054656f2cf97594365d15b2ddb72a9ed Mon Sep 17 00:00:00 2001
+From: Rob Richards <rrichards@cdatazone.org>
+Date: Wed, 10 Nov 2010 10:13:51 -0500
+Subject: [PATCH 02/32] fix win build
+
+---
+ win32/Makefile.msvc |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/win32/Makefile.msvc b/win32/Makefile.msvc
+index bd0eb9d..ff4c960 100644
+--- a/win32/Makefile.msvc
++++ b/win32/Makefile.msvc
+@@ -71,9 +71,9 @@ LIBS = $(LIBS) wsock32.lib ws2_32.lib
+ !if "$(WITH_ICONV)" == "1"
+ LIBS = $(LIBS) iconv.lib
+ !endif 
+-+!if "$(WITH_ICU)" == "1"
+-+LIBS = $(LIBS) icu.lib
+-+!endif
++!if "$(WITH_ICU)" == "1"
++LIBS = $(LIBS) icu.lib
++!endif
+ !if "$(WITH_ZLIB)" == "1"
+ LIBS = $(LIBS) zdll.lib
+ !endif
+-- 
+1.7.9.5
+

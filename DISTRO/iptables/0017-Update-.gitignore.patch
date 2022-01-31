@@ -1,0 +1,57 @@
+From f63d056f0c1ac122973a0859445c9cb5747e7213 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@medozas.de>
+Date: Sun, 18 Dec 2011 20:22:26 +0100
+Subject: [PATCH 17/19] Update .gitignore
+
+Split off extensions/.gitignore.
+---
+ .gitignore            |    9 ---------
+ extensions/.gitignore |    9 +++++++++
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+ create mode 100644 extensions/.gitignore
+
+diff --git a/.gitignore b/.gitignore
+index 8e082d2..b7c3dfb 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,9 +1,6 @@
+-.*.d
+-.*.dd
+ *.a
+ *.la
+ *.lo
+-*.oo
+ *.so
+ *.o
+ .deps/
+@@ -12,12 +9,6 @@
+ Makefile
+ Makefile.in
+ 
+-/extensions/GNUmakefile
+-/extensions/initext.c
+-/extensions/initext?.c
+-/extensions/matches?.man
+-/extensions/targets?.man
+-
+ /include/xtables.h
+ /include/iptables/internal.h
+ 
+diff --git a/extensions/.gitignore b/extensions/.gitignore
+new file mode 100644
+index 0000000..2e74faf
+--- /dev/null
++++ b/extensions/.gitignore
+@@ -0,0 +1,9 @@
++.*.d
++.*.dd
++*.oo
++
++/GNUmakefile
++/initext.c
++/initext?.c
++/matches?.man
++/targets?.man
+-- 
+1.7.9.5
+

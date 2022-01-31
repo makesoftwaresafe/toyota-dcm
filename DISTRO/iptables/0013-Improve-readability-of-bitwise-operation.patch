@@ -1,0 +1,38 @@
+From 8fe22aa0a242314349f6cd7219b56a60a9d75276 Mon Sep 17 00:00:00 2001
+From: Thomas Jarosch <thomas.jarosch@intra2net.com>
+Date: Mon, 5 Sep 2011 22:25:39 +0200
+Subject: [PATCH 13/19] Improve readability of bitwise operation
+
+CLUSTERIP: improve readability of bitwise operation
+
+Signed-off-by: Thomas Jarosch <thomas.jarosch@intra2net.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ extensions/libipt_CLUSTERIP.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/extensions/libipt_CLUSTERIP.c b/extensions/libipt_CLUSTERIP.c
+index 301e0e1..f4b638b 100644
+--- a/extensions/libipt_CLUSTERIP.c
++++ b/extensions/libipt_CLUSTERIP.c
+@@ -144,7 +144,7 @@ static void CLUSTERIP_print(const void *ip,
+ 	const struct ipt_clusterip_tgt_info *cipinfo =
+ 		(const struct ipt_clusterip_tgt_info *)target->data;
+ 	
+-	if (!cipinfo->flags & CLUSTERIP_FLAG_NEW) {
++	if (!(cipinfo->flags & CLUSTERIP_FLAG_NEW)) {
+ 		printf(" CLUSTERIP");
+ 		return;
+ 	}
+@@ -164,7 +164,7 @@ static void CLUSTERIP_save(const void *ip, const struct xt_entry_target *target)
+ 
+ 	/* if this is not a new entry, we don't need to save target
+ 	 * parameters */
+-	if (!cipinfo->flags & CLUSTERIP_FLAG_NEW)
++	if (!(cipinfo->flags & CLUSTERIP_FLAG_NEW))
+ 		return;
+ 
+ 	printf(" --new --hashmode %s --clustermac %s --total-nodes %d --local-node %d --hash-init %u",
+-- 
+1.7.9.5
+

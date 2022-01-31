@@ -1,0 +1,29 @@
+From c9c939d614bc6dd6579b11a872e3d2f55b3e4885 Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Tue, 10 May 2011 10:34:41 +0300
+Subject: [PATCH 18/32] configure: support silent automake rules if possible
+
+This gives us a much less noisy build and makes error stand out a lot more.
+---
+ configure.in |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/configure.in b/configure.in
+index a1d2c89..45c939e 100644
+--- a/configure.in
++++ b/configure.in
+@@ -50,6 +50,11 @@ VERSION=${LIBXML_VERSION}
+ 
+ AM_INIT_AUTOMAKE(libxml2, $VERSION)
+ 
++# Support silent build rules, requires at least automake-1.11. Disable
++# by either passing --disable-silent-rules to configure or passing V=1
++# to make
++m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
++
+ dnl Checks for programs.
+ AC_PROG_CC
+ AC_PROG_INSTALL
+-- 
+1.7.9.5
+

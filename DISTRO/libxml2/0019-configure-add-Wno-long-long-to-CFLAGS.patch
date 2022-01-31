@@ -1,0 +1,30 @@
+From 85deb486a98f28aa490d50f42224f9e4d53ddfb2 Mon Sep 17 00:00:00 2001
+From: Stefan Kost <ensonic@users.sf.net>
+Date: Tue, 10 May 2011 10:55:07 +0300
+Subject: [PATCH 19/32] configure: add -Wno-long-long to CFLAGS
+
+---
+ configure.in |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/configure.in b/configure.in
+index 45c939e..5dca51a 100644
+--- a/configure.in
++++ b/configure.in
+@@ -664,8 +664,11 @@ else
+ 	#
+ 	CFLAGS="${CFLAGS} -fexceptions"
+     fi
+-       
+-    CFLAGS="${CFLAGS} -pedantic -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls" 
++
++    # warnings we'd like to see
++    CFLAGS="${CFLAGS} -pedantic -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls"
++    # warnings we'd like to supress
++    CFLAGS="${CFLAGS} -Wno-long-long"
+     case "${host}" in
+           alpha*-*-linux* )
+ 	       CFLAGS="${CFLAGS} -mieee"
+-- 
+1.7.9.5
+

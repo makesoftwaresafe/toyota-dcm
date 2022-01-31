@@ -1,0 +1,31 @@
+From 3a69eff1aaf8e3242937bd7ecc94a60e7aa502cd Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Tue, 8 May 2012 19:22:31 +0200
+Subject: [PATCH 05/28] examples: Only check for HAVE_SIGACTION once in
+ Makefile.am
+
+---
+ examples/Makefile.am |    3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/examples/Makefile.am b/examples/Makefile.am
+index 64d98b9..64becc1 100644
+--- a/examples/Makefile.am
++++ b/examples/Makefile.am
+@@ -7,13 +7,10 @@ listdevs_SOURCES = listdevs.c
+ if HAVE_SIGACTION
+ dpfp_SOURCES = dpfp.c
+ noinst_PROGRAMS += dpfp
+-endif
+ 
+ if THREADS_POSIX
+-if HAVE_SIGACTION
+ dpfp_threaded_SOURCES = dpfp_threaded.c
+ dpfp_threaded_CFLAGS = $(THREAD_CFLAGS) $(AM_CFLAGS)
+ noinst_PROGRAMS += dpfp_threaded
+ endif
+ endif
+-
+-- 
+1.7.9.5
+

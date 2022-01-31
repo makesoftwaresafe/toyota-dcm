@@ -1,0 +1,26 @@
+From 6ac1b8d4cc055ccb63803d9463efcf5832b0cf18 Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Fri, 22 Feb 2013 15:43:07 -0600
+Subject: [PATCH 1/2] Tweak to work with Conti build.
+
+Change-Id: I9da94b4b7f6ddf3977b216e534a1ee9dc134571e
+---
+ common.mk |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/common.mk b/common.mk
+index ba87377..8d80587 100644
+--- a/common.mk
++++ b/common.mk
+@@ -32,7 +32,7 @@ ifeq ($(origin CROSS),undefined)
+   BUILDDIR := $(CURDIR)
+ else
+ # Remove the trailing slash to make the directory name
+-  BUILDDIR := $(CURDIR)/$(CROSS:-=)
++  BUILDDIR := $(CURDIR)
+ endif
+ endif
+ override BUILDDIR := $(patsubst %/,%,$(BUILDDIR))
+-- 
+1.7.9.5
+

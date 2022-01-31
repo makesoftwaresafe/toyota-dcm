@@ -1,0 +1,27 @@
+From ae996af002793005db318689229300ff73549964 Mon Sep 17 00:00:00 2001
+From: Ludovic Rousseau <ludovic.rousseau@gmail.com>
+Date: Tue, 8 May 2012 20:34:12 +0200
+Subject: [PATCH 12/28] Darwin: Fix warning: comparison between signed and
+ unsigned
+
+libusbx.git commit c5c6b0e69a13786e48b2b6254c8e5458dc6716cc
+---
+ libusb/os/darwin_usb.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libusb/os/darwin_usb.h b/libusb/os/darwin_usb.h
+index 59d0a69..b2c91d0 100644
+--- a/libusb/os/darwin_usb.h
++++ b/libusb/os/darwin_usb.h
+@@ -147,7 +147,7 @@ struct darwin_device_handle_priv {
+ struct darwin_transfer_priv {
+   /* Isoc */
+   IOUSBIsocFrame *isoc_framelist;
+-  size_t num_iso_packets;
++  int num_iso_packets;
+ 
+   /* Control */
+ #if !defined (LIBUSB_NO_TIMEOUT_DEVICE)
+-- 
+1.7.9.5
+

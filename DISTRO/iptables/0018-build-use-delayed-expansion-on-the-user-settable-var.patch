@@ -1,0 +1,66 @@
+From 32d8532a37004e11e5994d93df5e249c43197930 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@medozas.de>
+Date: Sun, 18 Dec 2011 04:04:37 +0100
+Subject: [PATCH 18/19] build: use delayed expansion on the user-settable
+ variables
+
+Signed-off-by: Jan Engelhardt <jengelh@medozas.de>
+---
+ extensions/GNUmakefile.in |   42 +++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/extensions/GNUmakefile.in b/extensions/GNUmakefile.in
+index b088684..84c85de 100644
+--- a/extensions/GNUmakefile.in
++++ b/extensions/GNUmakefile.in
+@@ -1,26 +1,26 @@
+ # -*- Makefile -*-
+ 
+-top_builddir := @top_builddir@
+-builddir     := @builddir@
+-top_srcdir  := @top_srcdir@
+-srcdir      := @srcdir@
+-ksourcedir  := @ksourcedir@
+-prefix      := @prefix@
+-exec_prefix := @exec_prefix@
+-libdir      := @libdir@
+-libexecdir  := @libexecdir@
+-xtlibdir    := @xtlibdir@
+-
+-CC             := @CC@
+-CCLD           := ${CC}
+-CFLAGS         := @CFLAGS@
+-CPPFLAGS       := @CPPFLAGS@
+-LDFLAGS        := @LDFLAGS@
+-regular_CFLAGS := @regular_CFLAGS@
+-regular_CPPFLAGS := @regular_CPPFLAGS@
+-kinclude_CPPFLAGS := @kinclude_CPPFLAGS@
+-
+-AM_CFLAGS      := ${regular_CFLAGS}
++top_builddir = @top_builddir@
++builddir     = @builddir@
++top_srcdir   = @top_srcdir@
++srcdir       = @srcdir@
++ksourcedir   = @ksourcedir@
++prefix       = @prefix@
++exec_prefix  = @exec_prefix@
++libdir       = @libdir@
++libexecdir   = @libexecdir@
++xtlibdir     = @xtlibdir@
++
++CC                 = @CC@
++CCLD               = ${CC}
++CFLAGS             = @CFLAGS@
++CPPFLAGS           = @CPPFLAGS@
++LDFLAGS            = @LDFLAGS@
++regular_CFLAGS     = @regular_CFLAGS@
++regular_CPPFLAGS   = @regular_CPPFLAGS@
++kinclude_CPPFLAGS  = @kinclude_CPPFLAGS@
++
++AM_CFLAGS       = ${regular_CFLAGS}
+ AM_CPPFLAGS     = ${regular_CPPFLAGS} -I${top_builddir}/include -I${top_builddir} -I${top_srcdir}/include ${kinclude_CPPFLAGS}
+ AM_DEPFLAGS     = -Wp,-MMD,$(@D)/.$(@F).d,-MT,$@
+ 
+-- 
+1.7.9.5
+

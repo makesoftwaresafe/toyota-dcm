@@ -1,0 +1,72 @@
+From 056ffb0bd25d91ffbcb83c521fc4d3d9904ec4d4 Mon Sep 17 00:00:00 2001
+From: "Andrew G. Morgan" <morgan@kernel.org>
+Date: Sat, 30 Jul 2011 18:22:21 -0700
+Subject: [PATCH 2/2] setcap: comment to help the user figure out why setcap
+ is failing.
+
+The file capabilities are not as expressive as process capabilities
+(for a reason - see the NOTES section of 'man 3 cap_set_file').
+
+The effective bits on a file under linux are captured by a single
+boolean. As such attempting to partially set effective bits via the
+more fully expressive process capability representation (cap_from_text)
+sometimes yields an error. From now on, suggest that when the user
+attempts to do this and an error occurs, the error might be such a
+mismatch between effective and the other capability bits.
+
+Signed-off-by: Andrew G. Morgan <morgan@kernel.org>
+---
+ progs/setcap.c |   27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
+diff --git a/progs/setcap.c b/progs/setcap.c
+index 0215fc4..83090ae 100644
+--- a/progs/setcap.c
++++ b/progs/setcap.c
+@@ -26,7 +26,7 @@ static void usage(void)
+ 
+ static int read_caps(int quiet, const char *filename, char *buffer)
+ {
+-    int i=MAXCAP;
++    int i = MAXCAP;
+ 
+     if (!quiet) {
+ 	fprintf(stderr,	"Please enter caps for file [empty line to end]:\n");
+@@ -170,10 +170,33 @@ int main(int argc, char **argv)
+ 	    }
+ 	    retval = cap_set_file(*++argv, cap_d);
+ 	    if (retval != 0) {
++		int explained = 0;
++#ifdef linux
++		cap_value_t cap;
++		cap_flag_value_t per_state;
++
++		for (cap = 0;
++		     cap_get_flag(cap_d, cap, CAP_PERMITTED, &per_state) != -1;
++		     cap++) {
++		    cap_flag_value_t inh_state, eff_state;
++
++		    cap_get_flag(cap_d, cap, CAP_INHERITABLE, &inh_state);
++		    cap_get_flag(cap_d, cap, CAP_EFFECTIVE, &eff_state);
++		    if ((inh_state | per_state) != eff_state) {
++			fprintf(stderr, "NOTE: Under Linux, effective file capabilities must either be empty, or\n"
++				"      exactly match the union of selected permitted and inheritable bits.\n");
++			explained = 1;
++			break;
++		    }
++		}
++#endif /* def linux */
++		
+ 		fprintf(stderr,
+ 			"Failed to set capabilities on file `%s' (%s)\n",
+ 			argv[0], strerror(errno));
+-		usage();
++		if (!explained) {
++		    usage();
++		}
+ 	    }
+ 	}
+ 	if (cap_d) {
+-- 
+1.7.9.5
+

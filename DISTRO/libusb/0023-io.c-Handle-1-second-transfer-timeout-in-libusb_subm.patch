@@ -1,0 +1,26 @@
+From 3b821d0a709c6b5b3094a763bb04e48ed0447050 Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Wed, 22 Aug 2012 01:32:10 -0700
+Subject: [PATCH 23/28] io.c: Handle >= 1 second transfer timeout in
+ libusb_submit_transfer()
+
+---
+ libusb/io.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libusb/io.c b/libusb/io.c
+index 16933fd..d858bb7 100644
+--- a/libusb/io.c
++++ b/libusb/io.c
+@@ -1141,7 +1141,7 @@ static int calculate_timeout(struct usbi_transfer *transfer)
+ 	current_time.tv_sec += timeout / 1000;
+ 	current_time.tv_nsec += (timeout % 1000) * 1000000;
+ 
+-	if (current_time.tv_nsec > 1000000000) {
++	while (current_time.tv_nsec >= 1000000000) {
+ 		current_time.tv_nsec -= 1000000000;
+ 		current_time.tv_sec++;
+ 	}
+-- 
+1.7.9.5
+

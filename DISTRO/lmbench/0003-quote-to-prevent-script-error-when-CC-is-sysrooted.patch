@@ -1,0 +1,27 @@
+From 10386c1c78a952ffddf19a9433e76ff97068dcbb Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Mon, 13 Aug 2012 10:05:24 -0500
+Subject: [PATCH 3/3] quote to prevent script error when CC is sysrooted.
+
+Ticket-Id: BZ123
+Change-Id: I65e653a136ff0f69913e5d3e24d7108660f78085
+---
+ scripts/build |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/build b/scripts/build
+index 16a6600..8a90e02 100755
+--- a/scripts/build
++++ b/scripts/build
+@@ -36,7 +36,7 @@ rm -f ${BASE}$$ ${BASE}$$.o ${BASE}$$.c
+ 	
+ # check for IA64 HP-UX w/ HP's ANSI compiler; may need pointer swizzling
+ arch=`echo $OS | awk -F- '{print $1;}'`
+-if [ X$CC = "Xcc" -a X$arch = "Xia64" ]
++if [ "X$CC" = "Xcc" -a "X$arch" = "Xia64" ]
+ then
+ 	echo "#include <stdlib.h>" > ${BASE}$$.c
+ 	echo "main(int ac, char *av[])" >> ${BASE}$$.c
+-- 
+1.7.9.5
+

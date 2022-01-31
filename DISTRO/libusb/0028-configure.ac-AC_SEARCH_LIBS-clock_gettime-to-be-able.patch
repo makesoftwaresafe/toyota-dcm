@@ -1,0 +1,26 @@
+From 7634714aa696175b08016b6f2185a75a2f55a113 Mon Sep 17 00:00:00 2001
+From: Peter Stuge <peter@stuge.se>
+Date: Tue, 23 Oct 2012 09:46:02 +0200
+Subject: [PATCH 28/28] configure.ac: AC_SEARCH_LIBS(clock_gettime) to be able
+ to add -pthread
+
+---
+ configure.ac |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 86b91ff..260d2f7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -78,7 +78,7 @@ case $backend in
+ linux)
+ 	AC_DEFINE(OS_LINUX, 1, [Linux backend])
+ 	AC_SUBST(OS_LINUX)
+-	AC_CHECK_LIB(rt, clock_gettime, LIBS="-lrt")
++	AC_SEARCH_LIBS(clock_gettime, rt, [], [], -pthread)
+ 	threads="posix"
+ 	THREAD_CFLAGS="-pthread"
+ 	LIBS="${LIBS} -pthread"
+-- 
+1.7.9.5
+

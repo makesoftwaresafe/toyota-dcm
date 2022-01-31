@@ -1,0 +1,32 @@
+From d5f37e2b2ceded4bebee64f179d9a1ec9b42c327 Mon Sep 17 00:00:00 2001
+From: Michael Gao <michael.gao@continental-corporation.com>
+Date: Thu, 25 Oct 2012 15:29:04 -0500
+Subject: [PATCH 1/8] eglibc svn arm lowlevellock include tls
+
+In file included from ../nptl/sysdeps/unix/sysv/linux/libc-lowlevellock.c:21:
+../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:
+  In function '__lll_lock_wait_private':
+  warning: implicit declaration of function 'THREAD_GETMEM'
+  error: 'THREAD_SELF' undeclared (first use in this function)
+  error: (Each undeclared identifier is reported only once
+  error: for each function it appears in.)
+  error: 'header' undeclared (first use in this function)
+---
+ .../unix/sysv/linux/arm/nptl/lowlevellock.h        |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ports/sysdeps/unix/sysv/linux/arm/nptl/lowlevellock.h b/ports/sysdeps/unix/sysv/linux/arm/nptl/lowlevellock.h
+index e745e66..4ae81dd 100644
+--- a/ports/sysdeps/unix/sysv/linux/arm/nptl/lowlevellock.h
++++ b/ports/sysdeps/unix/sysv/linux/arm/nptl/lowlevellock.h
+@@ -25,6 +25,7 @@
+ #include <atomic.h>
+ #include <sysdep.h>
+ #include <kernel-features.h>
++#include <tls.h>
+ 
+ #define FUTEX_WAIT		0
+ #define FUTEX_WAKE		1
+-- 
+1.7.9.5
+

@@ -1,0 +1,101 @@
+From 9336ffdcc58144a3940368d1a2deb7b871c14cbe Mon Sep 17 00:00:00 2001
+From: Aharon Campos <aharon.campos@continental-corporation.com>
+Date: Mon, 10 Feb 2014 17:07:20 -0600
+Subject: [PATCH 10/15] Allow systemd to poweroff or suspend with same key
+
+Use the power key to either suspend the system, if pressed once, or to
+power it off, if held for more than three seconds.
+
+Ticket-Id: BZ639
+Change-Id: I64f3062e0e6d8af7a1b386cd4630c0a672344990
+Signed-off-by: Aharon Campos <aharon.campos@continental-corporation.com>
+---
+ src/login/logind-button.c |   54 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 1 deletion(-)
+
+diff --git a/src/login/logind-button.c b/src/login/logind-button.c
+index ea45c28..621cb74 100644
+--- a/src/login/logind-button.c
++++ b/src/login/logind-button.c
+@@ -35,6 +35,22 @@
+ #include "dbus-common.h"
+ #include "sd-messages.h"
+ 
++#define SHUTDOWN_TIME_US    2000000
++#define MIN_SUSPEND_TIME_US  100000
++#define USEC_IN_SEC         1000000
++
++int time_diff_us(struct timeval *press, struct timeval *release)
++{
++        if (release->tv_usec > press->tv_usec) {
++                release->tv_usec += USEC_IN_SEC;
++                release->tv_sec--;
++        }
++
++        return (int) (release->tv_sec - press->tv_sec) * USEC_IN_SEC +
++                                release->tv_usec - press->tv_usec;
++}
++
++
+ Button* button_new(Manager *m, const char *name) {
+         Button *b;
+ 
+@@ -178,6 +194,8 @@ static int button_handle(
+ int button_process(Button *b) {
+         struct input_event ev;
+         ssize_t l;
++        static struct timeval press, release;
++        int timediff;
+ 
+         assert(b);
+ 
+@@ -187,11 +205,45 @@ int button_process(Button *b) {
+         if ((size_t) l < sizeof(ev))
+                 return -EIO;
+ 
++        if (ev.type == EV_KEY && ev.code == KEY_POWER) {
++                if (ev.value == 1) {
++                        memcpy(&press, &ev.time, sizeof(struct timeval));
++                } else {
++                        memcpy(&release, &ev.time, sizeof(struct timeval));
++                        timediff = time_diff_us(&press, &release);
++                        if (timediff < SHUTDOWN_TIME_US &&
++                            timediff > MIN_SUSPEND_TIME_US) {
++                                log_struct(LOG_INFO,
++                                    "MESSAGE=Suspend event triggered.",
++                                    MESSAGE_ID(SD_MESSAGE_SUSPEND_KEY),
++                                    NULL);
++                                return button_handle(b,
++                                    INHIBIT_HANDLE_SUSPEND_KEY,
++                                    b->manager->handle_suspend_key,
++                                    b->manager->suspend_key_ignore_inhibited,
++                                    true);
++                        } else if (timediff >= SHUTDOWN_TIME_US) {
++                                log_struct(LOG_INFO,
++                                   "MESSAGE=Power off event triggered.",
++                                   MESSAGE_ID(SD_MESSAGE_POWER_KEY),
++                                   NULL);
++                                return button_handle(b,
++                                    INHIBIT_HANDLE_POWER_KEY,
++                                    b->manager->handle_power_key,
++                                    b->manager->power_key_ignore_inhibited,
++                                    true);
++                        }
++                        /* clear timers for next cycle */
++                        memset(&press, 0, sizeof(struct timeval));
++                        memset(&release, 0, sizeof(struct timeval));
++                }
++                return 0;
++        }
++
+         if (ev.type == EV_KEY && ev.value > 0) {
+ 
+                 switch (ev.code) {
+ 
+-                case KEY_POWER:
+                 case KEY_POWER2:
+                         log_struct(LOG_INFO,
+                                    "MESSAGE=Power key pressed.",
+-- 
+1.7.9.5
+

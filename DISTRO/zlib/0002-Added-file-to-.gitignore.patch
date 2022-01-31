@@ -1,0 +1,23 @@
+From 48e0b6c6db81f1b597f1e0ce82f8967208f34420 Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Wed, 27 Feb 2013 14:11:36 -0600
+Subject: [PATCH 2/2] Added file to .gitignore
+
+Ticket-Id: BZ321
+Change-Id: Id1503ad2650c74c6bcf5269f0c04a4e3ca02dbf3
+---
+ .gitignore |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/.gitignore b/.gitignore
+index 9bc2a79..915db14 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -24,3 +24,4 @@
+ /minigzipsh
+ /zlib.pc
+ /zconf.h
++ztest2217.c
+-- 
+1.7.9.5
+
