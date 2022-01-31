@@ -1,0 +1,47 @@
+From 41aa270fe7f116ab19310517ebf2b95fcf9fc283 Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Tue, 22 Nov 2011 11:16:34 -0600
+Subject: [PATCH 12/15] Account mpfr source restructuring
+
+---
+ configure    |    6 +++---
+ configure.ac |    6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/configure b/configure
+index 30f354a..23b8092 100755
+--- a/configure
++++ b/configure
+@@ -5289,9 +5289,9 @@ if test "x$with_mpfr_lib" != x; then
+   gmplibs="-L$with_mpfr_lib $gmplibs"
+ fi
+ if test "x$with_mpfr$with_mpfr_include$with_mpfr_lib" = x && test -d ${srcdir}/mpfr; then
+-  gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/'"$lt_cv_objdir $gmplibs"
+-  gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr -I$$s/mpfr '"$gmpinc"
+-  extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/'"$lt_cv_objdir"
++  gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/src/'"$lt_cv_objdir $gmplibs"
++  gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr/src -I$$s/mpfr/src '"$gmpinc"
++  extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr/src --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/src/'"$lt_cv_objdir"
+   # Do not test the mpfr version.  Assume that it is sufficient, since
+   # it is in the source tree, and the library has not been built yet
+   # but it would be included on the link line in the version check below
+diff --git a/configure.ac b/configure.ac
+index 2cc8cf2..de3fa97 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1403,9 +1403,9 @@ if test "x$with_mpfr_lib" != x; then
+   gmplibs="-L$with_mpfr_lib $gmplibs"
+ fi
+ if test "x$with_mpfr$with_mpfr_include$with_mpfr_lib" = x && test -d ${srcdir}/mpfr; then
+-  gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/'"$lt_cv_objdir $gmplibs"
+-  gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr -I$$s/mpfr '"$gmpinc"
+-  extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/'"$lt_cv_objdir"
++  gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/src/'"$lt_cv_objdir $gmplibs"
++  gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr/src -I$$s/mpfr/src '"$gmpinc"
++  extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr/src --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/src/'"$lt_cv_objdir"
+   # Do not test the mpfr version.  Assume that it is sufficient, since
+   # it is in the source tree, and the library has not been built yet
+   # but it would be included on the link line in the version check below
+-- 
+1.7.9.5
+

@@ -1,0 +1,56 @@
+From 8bc9f3c1dca6988378b49ba92c5fd39947dda8c3 Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Tue, 22 Nov 2011 08:04:02 -0600
+Subject: [PATCH 11/15] Applied gcc-4.6.2-cross_compile-1.patch
+
+From http://www.linuxfromscratch.org/patches/lfs/development/
+---
+ configure    |   10 ++++++++++
+ configure.ac |   10 ++++++++++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/configure b/configure
+index b3cc9ad..30f354a 100755
+--- a/configure
++++ b/configure
+@@ -2800,6 +2800,16 @@ skipdirs=
+ # Noconfigdirs are removed loudly.
+ noconfigdirs=""
+ 
++# Make sure we don't let target-libiberty be added if we didn't want it.
++if test x$with_target_libiberty = xno ; then
++  noconfigdirs="$noconfigdirs target-libiberty"
++fi
++
++# Make sure we don't let target-zlib be added if we didn't want it.
++if test x$with_target_zlib = xno ; then
++  noconfigdirs="$noconfigdirs target-zlib"
++fi
++
+ use_gnu_ld=
+ # Make sure we don't let GNU ld be added if we didn't want it.
+ if test x$with_gnu_ld = xno ; then
+diff --git a/configure.ac b/configure.ac
+index c6615bd..2cc8cf2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -261,6 +261,16 @@ skipdirs=
+ # Noconfigdirs are removed loudly.
+ noconfigdirs=""
+ 
++# Make sure we don't let target-libiberty be added if we didn't want it.
++if test x$with_target_libiberty = xno ; then
++  noconfigdirs="$noconfigdirs target-libiberty"
++fi
++
++# Make sure we don't let target-zlib be added if we didn't want it.
++if test x$with_target_zlib = xno ; then
++  noconfigdirs="$noconfigdirs target-zlib"
++fi
++
+ use_gnu_ld=
+ # Make sure we don't let GNU ld be added if we didn't want it.
+ if test x$with_gnu_ld = xno ; then
+-- 
+1.7.9.5
+

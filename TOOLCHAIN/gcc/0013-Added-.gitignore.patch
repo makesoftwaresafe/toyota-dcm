@@ -1,0 +1,23 @@
+From d254630d8a9e38fd33476ea088b19a9cbc6b87ff Mon Sep 17 00:00:00 2001
+From: Guillermo Vidal <guillermo.vidal@continental-corporation.com>
+Date: Tue, 22 Nov 2011 11:20:11 -0600
+Subject: [PATCH 13/15] Added .gitignore
+
+---
+ .gitignore |    4 ++++
+ 1 file changed, 4 insertions(+)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..c72fcdc
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,4 @@
++build/
++autom4te.cache/
++
++
+-- 
+1.7.9.5
+
