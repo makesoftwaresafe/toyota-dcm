@@ -1,0 +1,18 @@
+version: '1.15'
+baseimage: $MAYHEM_DOCKER_REGISTRY/makesoftwaresafe/toyota-dcm/dnsmasq:latest
+project: makesoftwaresafe/toyota-dcm
+target: dnsmasq-dhcp6
+cmds:
+  - cmd: /dnsmasq-uninst/sbin/dnsmasq --no-daemon --port 0 --dhcp-range=fec0:0000:0000:ffff::0002,fec0:0000:0000:ffff::ffff --dhcp-leasefile=/tmp/leases
+    target_input: /tmp/fakenet_payload
+    env:
+      LD_PRELOAD: /libharness.so
+
+  - cmd: /dnsmasq-asan/sbin/dnsmasq --no-daemon --port 0 --dhcp-range=fec0:0000:0000:ffff::0002,fec0:0000:0000:ffff::ffff --dhcp-leasefile=/tmp/leases
+    target_input: /tmp/fakenet_payload
+    env:
+      LD_PRELOAD: /libharness.so
+    sanitizer: true
+    disable_mayhem_fuzz: true
+    disable_se: true
+
