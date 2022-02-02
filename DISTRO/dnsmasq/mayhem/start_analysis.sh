@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 pushd ../
 image=$(mayhem docker-registry)/makesoftwaresafe/toyota-dcm/dnsmasq:latest

@@ -15,4 +15,5 @@ cmds:
     sanitizer: true
     disable_mayhem_fuzz: true
     disable_se: true
+    timeout: 10
 
